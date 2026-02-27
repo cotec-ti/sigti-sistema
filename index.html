@@ -274,20 +274,38 @@
         </div>
 </div>
     <div id="login-screen">
-        <div class="login-box">
-            <h2>SIGTI COTEC</h2>
+    <div class="login-box">
+        <h2>SIGTI COTEC</h2>
+
+        <form onsubmit="fazerLogin(); return false;">
+
             <div style="margin-bottom: 16px;">
-                <label style="display:block; margin-bottom:8px; font-size:13px; color:#475569">E-mail Corporativo</label>
-                <input type="email" id="log-email" placeholder="nome@cotec.com.br">
+                <label style="display:block; margin-bottom:8px; font-size:13px; color:#475569">
+                    E-mail Corporativo
+                </label>
+                <input type="email" id="log-email" placeholder="nome@cotec.com.br" required>
             </div>
+
             <div style="margin-bottom: 24px;">
-                <label style="display:block; margin-bottom:8px; font-size:13px; color:#475569">Senha de Acesso</label>
-                <input type="password" id="log-senha" placeholder="••••••••">
+                <label style="display:block; margin-bottom:8px; font-size:13px; color:#475569">
+                    Senha de Acesso
+                </label>
+                <input type="password" id="log-senha" placeholder="••••••••" required>
             </div>
-            <button onclick="fazerLogin()" style="width: 100%;">ACESSAR SISTEMA</button>
-            <p id="login-error" style="color:var(--danger); font-size:12px; margin-top:16px; text-align:center; display:none;">Credenciais inválidas. Tente novamente.</p>
-        </div>
+
+            <button type="submit" style="width: 100%;">
+                ACESSAR SISTEMA
+            </button>
+
+        </form>
+
+        <p id="login-error"
+           style="color:var(--danger); font-size:12px; margin-top:16px; text-align:center; display:none;">
+           Credenciais inválidas. Tente novamente.
+        </p>
+
     </div>
+</div>
 
     <div class="sidebar" id="sidebar" style="display: none;">
         <h1>SIGTI</h1>
@@ -356,6 +374,7 @@
                 .select('*')
                 .eq('email', email)
                 .eq('senha', senha)
+                .eq('ativo', true)
                 .maybeSingle();
 
             if (error) throw error;
@@ -386,7 +405,9 @@
             console.error("Erro no Login:", err);
             alert("Erro técnico: " + err.message);
         }
+        
     }
+        
 
         /* ============================================================
            ROTEAMENTO E NAVEGAÇÃO
@@ -487,6 +508,7 @@
     if (!desc) return alert("Descreva o problema!");
 
     try {
+
         const { data, error } = await supabaseClient
             .from('solicitacoes')
             .insert([
@@ -501,12 +523,26 @@
 
         if (error) throw error;
 
+        // 🔔 Disparo do email
+        const { error: emailError } =
+            await supabaseClient.functions.invoke('enviar-email-os', {
+                body: {
+                    usuario_nome: currentUser.nome,
+                    descricao: desc
+                }
+            });
+
+        if (emailError) {
+            console.error("Erro ao enviar email:", emailError);
+        }
+
         alert("Solicitação enviada com sucesso!");
-        fecharModal(); // Fecha a janelinha
-        renderSolicitacoes(); // Atualiza a tabela na hora
+        fecharModal();
+        renderSolicitacoes();
+
     } catch (err) {
-        console.error("Erro ao enviar:", err);
-        alert("Erro ao gravar no banco: " + err.message);
+        console.error(err);
+        alert("Erro ao enviar solicitação.");
     }
 }
 
@@ -696,8 +732,7 @@ async function cadastrarEstoque() {
         document.getElementById('est-mod').value = '';
         carregarTabelaEstoque();
     }
-} // <--- FECHAMENTO CORRETO DA FUNÇÃO
-
+} 
 async function carregarTabelaEstoque() {
     const { data: dados, error } = await supabaseClient
         .from('estoque')
@@ -746,7 +781,15 @@ async function carregarTabelaEstoque() {
                 <div class="card">
                     <div class="table-container">
                         <table>
-                            <thead><tr><th>MAT</th><th>Nome</th><th>E-mail</th><th>Perfil</th></tr></thead>
+                            <thead>
+                                <tr>
+                                <th>MAT</th>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Perfil</th>
+                                <th>Ações</th>
+                                </tr>
+                                </thead>
                             <tbody id="lista-usuarios"></tbody>
                         </table>
                     </div>
@@ -782,11 +825,13 @@ async function carregarTabelaEstoque() {
     renderUsuarios();
 }
 
-        async function carregarTabelaUsuarios() {
+    async function carregarTabelaUsuarios() {
     const { data: dados, error } = await supabaseClient
         .from('usuarios')
         .select('*')
+        .eq('ativo', true)
         .order('matricula', { ascending: true });
+        console.log("Usuários retornados:", dados);
 
     if (error) {
         console.error("Erro ao carregar usuários:", error);
@@ -802,6 +847,19 @@ async function carregarTabelaEstoque() {
                 <span class="badge ${u.is_ti ? 'status-aprovado' : ''}">
                     ${u.is_ti ? 'TI' : 'Geral'}
                 </span>
+            </td>
+            <td style="display:flex; gap:6px;">
+                <button style="padding:6px 10px; font-size:12px;"
+                    onclick="alterarSenha(${u.id})">
+                    🔑 Senha
+                </button>
+
+                ${currentUser.id !== u.id ? `
+                <button style="padding:6px 10px; font-size:12px; background:#ef4444;"
+                    onclick="excluirUsuario(${u.id})">
+                    🗑 Excluir
+                </button>
+                ` : `<span style="font-size:12px; color:#64748b;">Você</span>`}
             </td>
         </tr>
     `).join('');
@@ -1023,6 +1081,58 @@ function fecharModal() {
         // Carregar tema salvo
         if(localStorage.getItem('sigti-theme') === 'dark') document.body.classList.add('dark-mode');
 
+
+
+async function alterarSenha(idUsuario) {
+    const novaSenha = prompt("Digite a nova senha:");
+
+    if (!novaSenha || novaSenha.length < 4) {
+        return alert("Senha inválida. Mínimo 4 caracteres.");
+    }
+
+    const { error } = await supabaseClient
+        .from('usuarios')
+        .update({ senha: novaSenha })
+        .eq('id', idUsuario);
+
+    if (error) {
+        console.error(error);
+        alert("Erro ao atualizar senha.");
+        return;
+    }
+
+    alert("Senha alterada com sucesso!");
+}
+
+async function excluirUsuario(idUsuario) {
+    if (!confirm("Deseja DESATIVAR este usuário?")) return;
+
+    const { error } = await supabaseClient
+        .from('usuarios')
+        .update({ ativo: false })
+        .eq('id', idUsuario);
+
+    if (error) {
+        console.error(error);
+        alert("Erro ao desativar usuário.");
+        return;
+    }
+
+    alert("Usuário desativado com sucesso!");
+    renderUsuarios();
+}
+function logout() {
+    currentUser = null;
+
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+
+    document.getElementById('log-email').value = '';
+    document.getElementById('log-senha').value = '';
+
+    document.getElementById('admin-menu').style.display = 'none';
+}
     </script>
     
 </body>
