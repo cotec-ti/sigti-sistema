@@ -1,5 +1,5 @@
      
-     
+
      /* ============================================================
        SISTEMA DE AUTENTICAÇÃO
        ============================================================ */
@@ -861,16 +861,14 @@ async function visualizarTermo(id) {
                 ${t.acessorios?.includes('Nenhum') ? '☑' : '☐'} Nenhum
                 </p>
 
-            <p style="margin:8px 0;">
-            Santa Helena de Goiás,
-            <b>
-            ${new Date(t.data_geracao || Date.now()).toLocaleDateString('pt-BR')}
-            </b>.
-            </p>
-
+            
             <p style="margin:15px 0 5px 0;">______________________________________________</p>
             <p style="margin:0;"><b>Assinatura do solicitante</b></p>
-
+                    <p style="margin:5px 0;">Santa Helena de Goiás, ${
+            t.data_geracao 
+            ? t.data_geracao.split('T')[0].split('-').reverse().join('/') 
+            : new Date().toLocaleDateString('pt-BR')
+        }</p>
             <p style="margin:15px 0 5px 0;"><b>Preenchimento obrigatório no ato da devolução (setor responsável)</b></p>
 
             <p style="margin:5px 0;">
@@ -918,18 +916,16 @@ async function visualizarTermo(id) {
                 <p style="margin:5px 0;">
                     ${t.acessorios?.includes('Cabo HDMI') ? '☑' : '☐'} Cabo HDMI &nbsp;&nbsp;
                     ${t.acessorios?.includes('Cabo VGA') ? '☑' : '☐'} Cabo VGA &nbsp;&nbsp;
-                    ${t.acessorios?.includes('Extensão') ? '☑' : '☐'} Extensão
-                    </p>
-
-                <p style="margin:8px 0;">
-                Santa Helena de Goiás,
-                <b>
-                ${new Date(t.data_geracao || Date.now()).toLocaleDateString('pt-BR')}
-                </b>.
-                </p>
-
+                    ${t.acessorios?.includes('Extensão') ? '☑' : '☐'} Extensão Elétrica
+                    </p>               
+                
                 <p style="margin:15px 0 5px 0;">______________________________________________</p>
                 <p style="margin:0;"><b>Assinatura do solicitante</b></p>
+                <p style="margin:5px 0;">Santa Helena de Goiás, ${
+                t.data_geracao 
+                ? t.data_geracao.split('T')[0].split('-').reverse().join('/') 
+                : new Date().toLocaleDateString('pt-BR')
+            }</p>
 
                 <p style="margin:15px 0 5px 0;"><b>Preenchimento obrigatório no ato da devolução (setor responsável)</b></p>
 
@@ -958,12 +954,16 @@ async function visualizarTermo(id) {
                     corpoTexto = `
                 <p style="text-align:center; margin:5px 0;"><b>ORDEM DE SERVIÇO – ASSISTÊNCIA TEC.</b></p>
 
-                <p style="margin:5px 0;"><b>Solicitante:</b> ${t.usuario_nome || ''}</p>
-                <p style="margin:5px 0;"><b>Data:</b> ${
-                new Date(t.data_geracao || Date.now()).toLocaleDateString('pt-BR')
-                }</p>
-
-                <p style="margin:8px 0 3px 0;"><b>Descrição:</b></p>
+                <p style="margin:10px 0;">
+                <b>Solicitante:</b> ${t.usuario_nome || '---'}, matrícula nº <b>${t.matricula || '---'}</b>
+                </p>
+              
+                <p style="margin:5px 0;">Santa Helena de Goiás, ${
+            t.data_geracao 
+            ? t.data_geracao.split('T')[0].split('-').reverse().join('/') 
+            : new Date().toLocaleDateString('pt-BR')
+        }</p>
+                <p style="margin:8px 0 3px 0;"><b>Descrição do serviço:</b></p>
                 <p style="margin:5px 0;">${t.descricao || ''}</p>
 
                 <p style="margin:15px 0 5px 0;"><b>Registro Técnico do Atendimento:</b></p>
@@ -984,17 +984,61 @@ async function visualizarTermo(id) {
 
                 <p style="margin:20px 0 5px 0;">______________________________________________</p>
                 <p style="margin:0;"><b>Responsável Técnico</b></p>
-
-                
-
-                 
+                     <p style="margin:5px 0;">Santa Helena de Goiás, ${
+            t.data_geracao 
+            ? t.data_geracao.split('T')[0].split('-').reverse().join('/') 
+            : new Date().toLocaleDateString('pt-BR')
+        }</p>           
                 `;
+                
+} else { 
+    // SEÇÃO DE ACESSÓRIOS / OUTROS (O "Coringa")
+    
+    tituloTermo = "REGISTRO DE SERVIÇO / ACESSÓRIOS";
+
+    // Pega os dados com 'Proteção de Valor Vazio' (Se não achar no banco, usa o texto padrão)
+    const solicitante = t.usuario_nome || t.solicitante || "Responsável pelo Setor";
+    const acaoRealizada = t.descricao || t.observacao || t.justificativa || "Manutenção/Troca de periférico conforme solicitado.";
+    
+    // Data formatada direto para o texto
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    const dataDocumento = t.data_geracao ? t.data_geracao.split(/[-T ]/).reverse().slice(-3).join('/') : dataAtual;
+
+    corpoTexto = `
+        <div style="text-align:center; margin-bottom: 20px;">
+            <p><b>ORDEM DE SERVIÇO – ACESSÓRIOS E PERIFÉRICOS</b></p>
+        </div>
+
+        <p style="margin:10px 0;">
+        <b>Solicitante:</b> ${t.usuario_nome || '---'}, matrícula nº <b>${t.matricula || '---'}</b>
+        </p>
+        <p style="margin: 10px 0;"><b>Descrição do Serviço:<br></b> ${acaoRealizada}</p>
+
+        <p style="margin: 25px 0; line-height: 1.6;">
+            Informamos a realização de manutenção, configuração ou troca de acessórios/periféricos técnicos para assegurar a continuidade das atividades no setor.
+        </p>
+
+        <p style="margin: 40px 0;">Santa Helena de Goiás, ${dataDocumento}</p>
+
+        <br><br>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 50px;">
+            <div style="border-top: 1px solid #000; width: 300px; text-align: center; padding-top: 8px;">
+                
+                Assinatura do Solicitante
+            </div>
+        </div>
+    `;
 }
+
 
     const modal = document.getElementById('modal-termo');
     const printArea = document.getElementById('print-area');
 
     // Monta o modal
+    // Ajuste estas medidas se o texto ficar muito em cima ou muito embaixo
+    const margemSuperior = "4.5cm"; // Espaço para o cabeçalho da imagem
+    const margemInferior = "2.5cm"; // Espaço para o rodapé da imagem
+
     printArea.innerHTML = `
         <div class="no-print" style="margin-bottom: 25px; display: flex; justify-content: space-between; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
             <button class="secondary" onclick="fecharModal()">⬅️ Voltar ao Sistema</button>
@@ -1003,15 +1047,25 @@ async function visualizarTermo(id) {
             </button>
         </div>
 
-        <div id="printable-content" style="border:2px solid #000; padding:40px; font-family:'Times New Roman', serif; color:#000; background:#fff; min-height:800px; position:relative;">
-            <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:20px; margin-bottom:20px;">
-                <h1 style="margin:0; font-size:22px;">COTEC - GOIÁS</h1>
-                <h2 style="margin:5px 0; font-size:18px;">${tituloTermo}</h2>
+        <div id="printable-content" style="
+            width: 21cm; 
+            min-height: 29.7cm; 
+            margin: 0 auto; 
+            background-image: url('timbrado.jpeg'); 
+            background-size: contain; 
+            background-repeat: no-repeat; 
+            background-position: center;
+            padding: ${margemSuperior} 2cm ${margemInferior} 2cm; 
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            position: relative;
+        ">
+            <div style="text-align: right; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 14pt;">${tituloTermo}</h3>
+                <p style="margin: 0; font-size: 12pt; color: red;"><b>Nº OS: ${t.solicitacao_id}</b></p>
             </div>
-            <div style="text-align:right; margin-bottom:30px; font-size:18px;">
-                <b>OS Nº: <span style="color:red;">${t.solicitacao_id}</span></b>
-            </div>
-            <div style="margin-bottom:40px; font-size:16px; line-height:1.8; text-align:justify;">
+
+            <div style="font-size: 11pt; line-height: 1.6; text-align: justify;">
                 ${corpoTexto}
             </div>
         </div>
@@ -1022,38 +1076,72 @@ async function visualizarTermo(id) {
 
     // Configura impressão
     document.getElementById('btn-imprimir').onclick = function() {
-        const conteudo = document.getElementById('printable-content').innerHTML;
-        const novaJanela = window.open('', '', 'width=900,height=700');
-        const dataNow = new Date();
-        novaJanela.document.write(`
-            <html>
-            <head>
-                <title>Termo</title>
-                <style>
-                    body { font-family: 'Times New Roman', serif; color: #000; margin: 40px; }
-                    h1,h2 { text-align:center; margin:0; }
-                    h2 { margin-top:5px; margin-bottom:20px; font-size:18px; }
-                    p,ol,ul { font-size:16px; line-height:1.8; text-align:justify; }
-                    ol li, ul li { margin-bottom:5px; }
-                </style>
-            </head>
-            <body>
-                ${conteudo}
-                <p style="text-align:center; margin-top:50px;">Santa Helena de Goiás, ${t.data_geracao ? new Date(t.data_geracao).toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'}) : dataNow.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})}</p>
-                <p style="font-size:10px; text-align:center; border-top:1px solid #eee; padding-top:10px; color:#666;">
-                    SIGTI - Sistema Interno de Gestão de TI | Documento gerado eletronicamente em ${dataNow.toLocaleString()}
-                </p>
-            </body>
-            </html>
-        `);
-        novaJanela.document.close();
-        novaJanela.focus();
-        novaJanela.print();
-        novaJanela.close();
+    // 1. Pegamos o conteúdo do HTML
+    let conteudoOriginal = document.getElementById('printable-content').innerHTML;
+
+    // 2. FUNÇÃO INTERNA PARA FORMATAR (Garante que funcione aqui dentro)
+    const converterData = (str) => {
+        if (!str) return '';
+        // Se a data vier com hífen (2026-03-07), nós invertemos
+        if (str.includes('-')) {
+            const p = str.split(/[-T ]/);
+            return `${p[2]}/${p[1]}/${p[0]}`;
+        }
+        return str; // Se já estiver certa, mantém
     };
 
+    // 3. CAPTURA A DATA DA OS (Tentando pegar do objeto 't' que você usa)
+    const dataOS = converterData(t.data_geracao || t.created_at || new Date().toISOString());
 
-}
+    const novaJanela = window.open('', '_blank', 'width=900,height=700');
+    const urlImagem = window.location.origin + '/timbrado.jpeg';
+
+    novaJanela.document.write(`
+        <html>
+        <head>
+            <title>Impressão SIGTI</title>
+            <style>
+                @media print {
+                    body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    @page { size: A4; margin: 0; }
+                }
+                body { margin: 0; padding: 0; font-family: 'Times New Roman', serif; }
+                .container-impressao { position: relative; width: 21cm; height: 29.7cm; }
+                .fundo-timbrado { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+                .texto-sobreposto { position: relative; padding: 4.5cm 2cm 2cm 2cm; z-index: 1; }
+                p { font-size: 12pt; line-height: 1.5; }
+            </style>
+        </head>
+        <body>
+            <div class="container-impressao">
+                <img src="${urlImagem}" class="fundo-timbrado">
+                <div class="texto-sobreposto">
+                    ${conteudoOriginal}
+                    <p style="text-align:center; margin-top:50px;">
+                        Santa Helena de Goiás, ${dataOS}
+                    </p>
+                </div>
+            </div>
+            <script>
+                window.onload = () => {
+                    setTimeout(() => {
+                        window.print();
+                        window.close();
+                    }, 800);
+                };
+            <\/script>
+        </body>
+        </html>
+    `);
+    novaJanela.document.close();
+};
+    
+    // Pequena pausa para a imagem carregar antes de imprimir
+    setTimeout(() => {
+                
+    }, 500);
+    };
+    
 function imprimirTermo() {
     const conteudo = document.getElementById('printable-content').innerHTML;
     const minhaJanela = window.open('', '', 'width=900,height=700');
