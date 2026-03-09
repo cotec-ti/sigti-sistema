@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>SIGTI | Sistema de Gestão TI</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,6 +13,7 @@
 
 
 </head>
+<link rel="icon" type="image/jpeg" href="logo.jpeg">
     <body>             
      
         <div id="modal-termo">
@@ -20,13 +22,14 @@
 
         <div id="login-screen">
         <div class="login-box">
+        
             <h2>SIGTI COTEC</h2>
 
             <form onsubmit="fazerLogin(); return false;">
 
                 <div style="margin-bottom: 16px;">
                     <label style="display:block; margin-bottom:8px; font-size:13px; color:#475569">
-                        E-mail Corporativo
+                        E-mail
                     </label>
                     <input type="email" id="log-email" placeholder="nome@cotec.com.br" required>
                 </div>
@@ -51,13 +54,27 @@
 
         </div> </div>
 
-        <div class="sidebar" id="sidebar" style="display: none;">
-    <h1>SIGTI</h1>
+       <div class="sidebar" id="sidebar" style="display: none; text-align: center;">
+            <img src="logo.jpeg" alt="Logo" 
+             style="width: 220px !important; 
+                height: auto; 
+                display: block; 
+                margin: 20px auto 0 auto; 
+                border-radius: 8px;
+                background-color: white; 
+                padding: 5px;">
 
-    <div id="user-info" style="padding: 0 12px 32px 12px; border-bottom: 1px solid #1e293b; margin-bottom: 32px;">
-        <div style="font-size: 14px; font-weight: 600;" id="user-name">Carregando...</div>
-        <div style="font-size: 12px; color: #64748b;" id="user-role">Setor TI</div>
-    </div>
+            <h1 style="margin-top: 5px; 
+               margin-bottom: 15px; 
+               color: #3b82f6; 
+               font-size: 24px; /* Ajuste o tamanho se o H1 padrão ficar gigante */
+               text-align: center;">SIGTI</h1>
+
+
+            <div id="user-info" style="padding: 0 12px 32px 12px; border-bottom: 1px solid #1e293b; margin-bottom: 32px;">
+            <div style="font-size: 14px; font-weight: 600;" id="user-name">Carregando...</div>
+            <div style="font-size: 12px; color: #64748b;" id="user-role">Setor TI</div>
+            </div>
 
     <div class="nav-group">
         <div class="nav-label">Menu Principal</div>
