@@ -1330,18 +1330,24 @@ document.addEventListener('keydown', function(event) {
     }
 });
 // 📡 Atualização em Tempo Real
+// 📡 MONITOR GERAL EM TEMPO REAL
 supabaseClient
-  .channel('canal-solicitacoes')
+  .channel('monitor-geral')
+  // Escuta a tabela de Solicitações (Novas OS e Mudanças de Status)
   .on(
     'postgres_changes', 
-    { 
-      event: '*', 
-      schema: 'public', 
-      table: 'solicitacoes' 
-    }, 
-    (payload) => {
-      // Quando qualquer OS mudar no banco, ele recarrega a lista sozinho
-      navegar('solicitacoes');
+    { event: '*', schema: 'public', table: 'solicitacoes' }, 
+    () => { 
+        navegar('solicitacoes'); // Atualiza a lista
+        atualizarContadores();   // Atualiza os números nos cards
+    }
+  )
+  // Escuta a tabela de Estoque (Empréstimos e Devoluções)
+  .on(
+    'postgres_changes', 
+    { event: '*', schema: 'public', table: 'estoque' }, 
+    () => { 
+        atualizarContadores(); // Atualiza os números do estoque na hora
     }
   )
   .subscribe();
