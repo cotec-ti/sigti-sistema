@@ -4,6 +4,8 @@
        SISTEMA DE AUTENTICAÇÃO
        ============================================================ */
 
+
+
     async function fazerLogin() {
     const email = document.getElementById('log-email').value.trim().toLowerCase();
     const senha = document.getElementById('log-senha').value.trim();
