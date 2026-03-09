@@ -1,0 +1,310 @@
+[
+  {
+    "id": 1770646188842,
+    "usuario_id": 2,
+    "usuario": "Joaquim Silva",
+    "tipo": "Notebook",
+    "descricao": "sala 13",
+    "status": "aprovado",
+    "data": "09/02/2026"
+  },
+  {
+    "id": 1770646665937,
+    "usuario_id": 2,
+    "usuario": "Joaquim Silva",
+    "tipo": "Notebook",
+    "descricao": "zcxzc",
+    "status": "aprovado",
+    "data": "09/02/2026"
+  },
+  {
+    "id": 1771001514829,
+    "usuario_id": 2,
+    "usuario": "Joaquim Silva",
+    "tipo": "Notebook",
+    "descricao": "reuniao na secretaria",
+    "status": "aprovado",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771003264299,
+    "usuario_id": 2,
+    "usuario": "Joaquim Silva",
+    "tipo": "Notebook",
+    "descricao": "aprensentaçao no auditorio",
+    "status": "aprovado",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771003902365,
+    "usuario_id": 2,
+    "usuario": "Joaquim Silva",
+    "tipo": "Notebook",
+    "descricao": "sadsadsadsad",
+    "status": "aprovado",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771004621740,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Notebook",
+    "descricao": "reuniao na diretoria",
+    "status": "aprovado",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771007031540,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Manutenção/Assistência",
+    "descricao": "impressora travando",
+    "status": "concluida",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771008817638,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Notebook",
+    "descricao": "apresentaçao em sala",
+    "status": "aprovado",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771008835293,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Manutenção/Assistência",
+    "descricao": "computador deu tela azul",
+    "status": "concluida",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771008844764,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Acessórios",
+    "descricao": " preciso de um telcado",
+    "status": "concluida",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771012870811,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Notebook",
+    "descricao": "aassss",
+    "status": "aprovado",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771012879155,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Manutenção/Assistência",
+    "descricao": "pc",
+    "status": "concluida",
+    "data": "13/02/2026"
+  },
+  {
+    "id": 1771014467643,
+    "usuario_id": 124567,
+    "usuario": "Alessandra Souza",
+    "tipo": "Projetor",
+    "descricao": "sala 11",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771014533587,
+    "usuario_id": 124567,
+    "usuario": "Alessandra Souza",
+    "tipo": "Notebook",
+    "descricao": "sala 12",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771508107254,
+    "usuario_id": 1001,
+    "usuario": "Administrador TI",
+    "tipo": "Notebook",
+    "descricao": "sala 11",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771508147561,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Notebook",
+    "descricao": "sala 12",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771508671656,
+    "usuario_id": 2005,
+    "usuario": "João Silva",
+    "tipo": "Projetor",
+    "descricao": "sal 14",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771508804632,
+    "usuario_id": 124567,
+    "usuario": "Alessandra Souza",
+    "tipo": "Notebook",
+    "descricao": "para extensao RV",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771509039935,
+    "usuario_id": 124567,
+    "usuario": "Alessandra Souza",
+    "tipo": "Notebook",
+    "descricao": "sala 20",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771512151440,
+    "usuario_id": 102,
+    "usuario": "Maria A",
+    "tipo": "Notebook",
+    "descricao": "eu quero ",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771512210730,
+    "usuario_id": 2102,
+    "usuario": "Cassio",
+    "tipo": "Projetor",
+    "descricao": "pode trazer",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771512211637,
+    "usuario_id": 102,
+    "usuario": "Maria A",
+    "tipo": "Projetor",
+    "descricao": "necessito",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771513549860,
+    "usuario_id": 3030,
+    "usuario": "Danny",
+    "tipo": "Notebook",
+    "descricao": "viagem ",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771514842313,
+    "usuario_id": 2101,
+    "usuario": "Rosana B",
+    "tipo": "Notebook",
+    "descricao": "projeto de extensão",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771514902841,
+    "usuario_id": 2101,
+    "usuario": "Rosana B",
+    "tipo": "Notebook",
+    "descricao": "",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771518749071,
+    "usuario_id": 10,
+    "usuario": "Geovani C",
+    "tipo": "Manutenção/Assistência",
+    "descricao": "Meu computador não liga, só fica com a tela preta.",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771518775221,
+    "usuario_id": 10,
+    "usuario": "Geovani C",
+    "tipo": "Notebook",
+    "descricao": "Solicito notebook para uso em demanda externa \"Evento dia D\"",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771518821529,
+    "usuario_id": 10,
+    "usuario": "Geovani C",
+    "tipo": "Projetor",
+    "descricao": "Solicito projeto para uso do professor Higor durante sua aula. O projetor ficará sob minha responsabilidadeaté o dia 10/03/2025",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771521417935,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Manutenção/Assistência",
+    "descricao": "pc travando secretaria",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771532726251,
+    "usuario_id": 1001,
+    "usuario": "Mouzer S",
+    "tipo": "Manutenção/Assistência",
+    "descricao": "Impressora sem tinta",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771611195178,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Notebook",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771611817985,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Notebook",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771611832344,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Projetor",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771612196961,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Notebook",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771612218825,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Notebook",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771612460073,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Notebook",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  },
+  {
+    "id": 1771612472985,
+    "usuario_id": 1,
+    "usuario": "Admin SIGTI",
+    "tipo": "Notebook",
+    "descricao": "sala 10",
+    "status": "aprovado"
+  }
+]
