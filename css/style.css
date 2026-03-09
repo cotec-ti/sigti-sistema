@@ -68,18 +68,32 @@
         }
 
         /* --- BARRA LATERAL --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--primary);
-            color: white;
-            padding: 32px 20px;
-            position: fixed;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
+        /* --- BARRA LATERAL --- */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--primary);
+    color: white;
+    padding: 32px 20px;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    
+    /* ESTAS 2 LINHAS RESOLVEM O SEU PROBLEMA: */
+    overflow-y: auto; 
+    scrollbar-width: thin; /* Deixa a barra de rolagem mais elegante no Firefox */
+}
+
+/* Deixa a barra de rolagem mais discreta no Chrome/Edge */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--secondary);
+    border-radius: 10px;
+}
 
         .sidebar h1 {
             font-size: 24px;
