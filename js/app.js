@@ -1112,26 +1112,23 @@ async function visualizarTermo(id) {
                 p { font-size: 12pt; line-height: 1.5; }
             </style>
         </head>
-        <body>
-            <div class="container-impressao">
-                <img src="${urlImagem}" class="fundo-timbrado">
-                <div class="texto-sobreposto">
-                    ${conteudoOriginal}
-                    <p style="text-align:center; margin-top:50px;">
-                        Santa Helena de Goiás, ${dataOS}
-                    </p>
-                </div>
+            <body>
+                <div class="container-impressao">
+        <img src="timbrado.jpeg" class="fundo-timbrado">
+        
+        <div class="texto-sobreposto">
+            ${conteudoOriginal}
+        </div>
+         </div>
             </div>
             <script>
-        // Esta função espera todas as imagens carregarem
-        window.onload = function() {
-            // Damos um fôlego de 500ms para garantir que o renderizador do navegador processe a imagem
-            setTimeout(function() {
-                window.print();
-                // Opcional: window.close(); // Fecha a aba após imprimir
-            }, 500);
-        };
-    </script>
+                window.onload = () => {
+                    setTimeout(() => {
+                        window.print();
+                        window.close();
+                    }, 800);
+                };
+            </script>
         </body>
         </html>
     `);
