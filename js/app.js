@@ -1334,26 +1334,26 @@ document.addEventListener('keydown', function(event) {
         // 📡 Atualização em Tempo Real
 
         supabaseClient
-        .channel('monitor-geral')
-        .on(
-            'postgres_changes', 
-            { event: '*', schema: 'public', table: 'solicitacoes' }, 
-            () => { 
-                // Se mudar algo na OS, recarrega a página de solicitações
-                if (typeof navegar === 'function') {
-                    navegar('solicitacoes'); 
-                }
-            }
-        )
-        .on(
-            'postgres_changes', 
-            { event: '*', schema: 'public', table: 'estoque' }, 
-            () => { 
-                // Se mudar algo no estoque, recarrega para atualizar os números
-                // Se você tiver uma função específica para o painel/dashboard, use ela aqui
-                if (typeof navegar === 'function') {
-                    navegar('dashboard'); // Ou o nome da tela onde ficam os contadores
-                }
-            }
-        )
-        .subscribe();
+  .channel('monitor-geral')
+  .on(
+    'postgres_changes', 
+    { event: '*', schema: 'public', table: 'solicitacoes' }, 
+    (payload) => { 
+        console.log('Mudança em Solicitações detectada!');
+        // Se a função navegar existir, ele atualiza a tela
+        if (typeof navegar === 'function') {
+            navegar('solicitacoes'); 
+        }
+    }
+  )
+  .on(
+    'postgres_changes', 
+    { event: '*', schema: 'public', table: 'estoque' }, 
+    () => { 
+        console.log('Mudança em Estoque detectada!');
+        if (typeof navegar === 'function') {
+            navegar('solicitacoes'); 
+        }
+    }
+  )
+  .subscribe();
