@@ -363,6 +363,7 @@ async function gerarHash(texto) {
         alert("Erro técnico: " + erro.message);
     }
 }
+
         async function carregarTabelaOS() {
             const { data: lista, error } = await supabaseClient
         .from('solicitacoes')
@@ -981,7 +982,8 @@ async function visualizarTermo(id) {
                 ( ) Aguardando peças<br>
                 ( ) Não constatado defeito
                 </p>
-
+                <p style="margin:20px 0 5px 0;">______________________________________________</p>
+                <p style="margin:0;"><b>Ass. do Solicitnate</b></p>
                 <p style="margin:20px 0 5px 0;">______________________________________________</p>
                 <p style="margin:0;"><b>Responsável Técnico</b></p>
                      <p style="margin:5px 0;">Santa Helena de Goiás, ${
@@ -1025,6 +1027,12 @@ async function visualizarTermo(id) {
             <div style="border-top: 1px solid #000; width: 300px; text-align: center; padding-top: 8px;">
                 
                 Assinatura do Solicitante
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 50px;">
+            <div style="border-top: 1px solid #000; width: 300px; text-align: center; padding-top: 8px;">
+                
+                Renponsável Técnico
             </div>
         </div>
     `;
@@ -1140,6 +1148,9 @@ async function visualizarTermo(id) {
                 
     }, 500);
     };
+
+
+    
     
 function imprimirTermo() {
     const conteudo = document.getElementById('printable-content').innerHTML;
@@ -1312,3 +1323,25 @@ function logout() {
     localStorage.removeItem('sigti_user'); 
     window.location.reload();
 }
+document.addEventListener('keydown', function(event) {
+    // Se a tecla for Esc (Escape)
+    if (event.key === 'Escape') {
+        fecharModal();
+    }
+});
+// 📡 Atualização em Tempo Real
+supabaseClient
+  .channel('canal-solicitacoes')
+  .on(
+    'postgres_changes', 
+    { 
+      event: '*', 
+      schema: 'public', 
+      table: 'solicitacoes' 
+    }, 
+    (payload) => {
+      // Quando qualquer OS mudar no banco, ele recarrega a lista sozinho
+      navegar('solicitacoes');
+    }
+  )
+  .subscribe();
