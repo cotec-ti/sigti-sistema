@@ -62,7 +62,11 @@ async function gerarHash(texto) {
            ROTEAMENTO E NAVEGAÇÃO
            ============================================================ */
     function navegar(tela, el) {
+    telaAtiva = tela; // <--- Adicione isso aqui
+    
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    // ... restante do seu código (o switch, etc)
+
     if (el && el.classList) { el.classList.add('active'); }
 
     const container = document.getElementById('view-container');
@@ -1333,27 +1337,23 @@ document.addEventListener('keydown', function(event) {
 
         // 📡 Atualização em Tempo Real
 
-        supabaseClient
+      // 📡 MONITOR REALTIME (Versão Inteligente - Substitua o anterior por este)
+supabaseClient
   .channel('monitor-geral')
   .on(
     'postgres_changes', 
     { event: '*', schema: 'public', table: 'solicitacoes' }, 
     (payload) => { 
-        console.log('Mudança em Solicitações detectada!');
-        // Se a função navegar existir, ele atualiza a tela
-        if (typeof navegar === 'function') {
-            navegar('solicitacoes'); 
+        console.log('Mudança detectada no banco!');
+
+        // Só atualiza a lista se o usuário já estiver na aba de solicitações
+        if (telaAtiva === 'solicitacoes') {
+            console.log('Atualizando lista de solicitações em tempo real...');
+            renderSolicitacoes(); 
         }
-    }
-  )
-  .on(
-    'postgres_changes', 
-    { event: '*', schema: 'public', table: 'estoque' }, 
-    () => { 
-        console.log('Mudança em Estoque detectada!');
-        if (typeof navegar === 'function') {
-            navegar('solicitacoes'); 
-        }
+        
+        // DICA: Se você tiver aquela função de contadores, 
+        // pode chamá-la aqui fora do 'if' para o número mudar em qualquer tela.
     }
   )
   .subscribe();
