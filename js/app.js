@@ -241,7 +241,6 @@ async function gerarHash(texto) {
 
      async function processarOS(id, uid, tipo, nome) {
     try {
-
         // 1️⃣ Buscar OS
         const { data: os, error: errOS } = await supabaseClient
             .from('solicitacoes')
@@ -256,8 +255,6 @@ async function gerarHash(texto) {
 
         // 🔧 MANUTENÇÃO
         if (tipo === 'Manutenção') {
-
-            // Se estiver pendente → colocar em andamento
             if (os.status === 'pendente') {
                 await supabaseClient
                     .from('solicitacoes')
@@ -265,11 +262,12 @@ async function gerarHash(texto) {
                     .eq('id', id);
 
                 alert("OS colocada em andamento.");
+                // CORREÇÃO AQUI: Forçar a tabela a atualizar antes de navegar
+                if (typeof carregarTabelaOS === 'function') await carregarTabelaOS();
                 navegar('solicitacoes');
                 return;
             }
 
-            // Se já estiver em andamento → concluir e gerar termo
             if (os.status !== 'em_andamento') {
                 alert("Essa OS já foi finalizada.");
                 return;
@@ -278,7 +276,6 @@ async function gerarHash(texto) {
 
         // 🖥️ Notebook ou Projetor → buscar estoque
         if (tipo === 'Notebook' || tipo === 'Projetor') {
-
             const { data: estoque, error: errE } = await supabaseClient
                 .from('estoque')
                 .select('*')
@@ -312,7 +309,6 @@ async function gerarHash(texto) {
 
         // 📌 3️⃣ GERAR ID SEQUENCIAL
         const anoAtual = new Date().getFullYear();
-
         const { data: todosTermos, error: errT } = await supabaseClient
             .from('termos')
             .select('solicitacao_id');
@@ -320,12 +316,10 @@ async function gerarHash(texto) {
         if (errT) throw new Error("Erro ao buscar termos");
 
         const termosDoAno = todosTermos.filter(t =>
-            t.solicitacao_id &&
-            t.solicitacao_id.toString().startsWith(anoAtual.toString())
+            t.solicitacao_id && t.solicitacao_id.toString().startsWith(anoAtual.toString())
         );
 
         let proximoNumero = 1;
-
         if (termosDoAno.length > 0) {
             const sequenciais = termosDoAno.map(t => {
                 const numero = t.solicitacao_id.toString().substring(4);
@@ -352,7 +346,8 @@ async function gerarHash(texto) {
         if (errSalvar) throw new Error("Erro ao gerar termo no banco");
 
         // 🔄 5️⃣ Atualizar status da OS
-        const novoStatus = tipo === 'Manutenção' ? 'concluido' : 'aprovado';
+        // ATENÇÃO: Verifique se no seu carregarTabelaOS você usa 'concluida' ou 'concluido'
+        const novoStatus = tipo === 'Manutenção' ? 'concluida' : 'aprovado';
 
         const { error: errFinal } = await supabaseClient
             .from('solicitacoes')
@@ -362,6 +357,9 @@ async function gerarHash(texto) {
         if (errFinal) throw new Error("Erro ao finalizar solicitação");
 
         alert(`Ordem de Serviço #${idCustom} gerada com sucesso!`);
+        
+        // CORREÇÃO FINAL: Garante que a tela mude
+        if (typeof carregarTabelaOS === 'function') await carregarTabelaOS();
         navegar('solicitacoes');
 
     } catch (erro) {
@@ -370,117 +368,167 @@ async function gerarHash(texto) {
     }
 }
 
-        async function carregarTabelaOS() {
-            const { data: lista, error } = await supabaseClient
-        .from('solicitacoes')
-        .select('*')
-        .order('created_at', { ascending: false });
+    /* --- FUNÇÕES DE APOIO --- */
 
-    if (error) {
-        console.error("Erro ao carregar OS:", error);
-        return;
+    // Busca a descrição atual para não apagar o que o usuário escreveu
+    async function buscarDescricaoAtual(id) {
+        const { data } = await supabaseClient
+            .from('solicitacoes')
+            .select('descricao')
+            .eq('id', id)
+            .single();
+        return data ? data.descricao : "";
     }
+
+    // Função ÚNICA para devolver a OS
+    
+    async function devolverOS(id) {
+        const motivo = prompt("Informe o motivo da devolução:");
+        if (!motivo) return;
+
+        try {
+            const descAtual = await buscarDescricaoAtual(id);
+            const { error } = await supabaseClient
+                .from('solicitacoes')
+                .update({ 
+                    status: 'devolvida', 
+                    descricao: `[MOTIVO DA DEVOLUÇÃO: ${motivo.toUpperCase()}] - ${descAtual}` 
+                })
+                .eq('id', id);
+
+            if (error) throw error;
+            alert("OS devolvida!");
+            carregarTabelaOS();
+        } catch (err) {
+            alert("Erro técnico ao devolver. Verifique o console.");
+        }
+    }
+
+    /* --- TABELA (LIMPA E SEM DUPLICAÇÃO) --- */
+    async function carregarTabelaOS() {
+    const { data: lista, error } = await supabaseClient
+        .from('solicitacoes').select('*').order('created_at', { ascending: false });
+
+    if (error) return;
 
     const tbody = document.getElementById('lista-os');
     if (!tbody) return;
 
-   tbody.innerHTML = lista.map(os => {
-
-    let botao = '---';
-
-    if (currentUser.is_ti) {
-
-        if (os.status === 'pendente') {
-            botao = `
-                <button onclick="processarOS('${os.id}', '${os.usuario_id}', '${os.tipo}', '${os.usuario_nome}')" 
-                    style="padding:6px 12px; font-size:12px;">
-                    Iniciar
-                </button>`;
+    tbody.innerHTML = lista.map(os => {
+        let botoesAcao = '---';
+        
+        // REGRA 1: Se a OS é MINHA e foi devolvida, eu preciso EDITAR
+        if (os.usuario_id === currentUser.id && os.status === 'devolvida') {
+            botoesAcao = `<button onclick="abrirModalEdicao('${os.id}', '${os.descricao}')" style="background:#6366f1; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Corrigir OS</button>`;
+        } 
+        
+        // REGRA 2: Se eu sou TI, eu vejo os botões de gestão (Aceitar/Devolver)
+        else if (currentUser.is_ti) {
+            if (os.status === 'pendente') {
+                botoesAcao = `
+                    <button onclick="processarOS('${os.id}', '${os.usuario_id}', '${os.tipo}', '${os.usuario_nome}')" style="background:#22c55e; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">Aceitar</button>
+                    <button onclick="devolverOS('${os.id}')" style="background:#f59e0b; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">Devolver</button>
+                `;
+            } else if (os.status === 'em_andamento') {
+                botoesAcao = `<button onclick="processarOS('${os.id}', '${os.usuario_id}', '${os.tipo}', '${os.usuario_nome}')" style="background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Concluir</button>`;
+            }
         }
 
-        else if (os.status === 'em_andamento') {
-            botao = `
-                <button onclick="processarOS('${os.id}', '${os.usuario_id}', '${os.tipo}', '${os.usuario_nome}')" 
-                    style="padding:6px 12px; font-size:12px;">
-                    Concluir
-                </button>`;
-        }
+        return `
+            <tr>
+                <td>#${os.id.toString().slice(-4)}</td>
+                <td>${new Date(os.created_at).toLocaleDateString()}</td>
+                <td>${os.usuario_nome}</td>
+                <td>${os.tipo}</td>
+                <td><span class="badge status-${os.status}">${os.status.toUpperCase()}</span></td>
+                <td>${botoesAcao}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+    async function abrirModalEdicao(id, descricaoAntiga) {
+    const novaDesc = prompt("Corrija sua descrição:", descricaoAntiga);
+    if (!novaDesc || novaDesc === descricaoAntiga) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from('solicitacoes')
+            .update({ 
+                descricao: novaDesc,
+                status: 'pendente' // Volta para a TI poder aceitar de novo
+            })
+            .eq('id', id);
+
+        if (error) throw error;
+        alert("OS corrigida com sucesso!");
+        carregarTabelaOS();
+    } catch (err) {
+        alert("Erro ao editar OS.");
     }
-
-    return `
-        <tr>
-            <td>#${os.id}</td>
-            <td>${new Date(os.created_at || Date.now()).toLocaleDateString()}</td>
-            <td>${os.usuario_nome}</td>
-            <td><b>${os.tipo}</b></td>
-            <td><span class="badge status-${os.status}">${os.status}</span></td>
-            <td>${botao}</td>
-        </tr>
-    `;
-}).join('');
 }
-/* ============================================================
-   TELA: GESTÃO DE ESTOQUE
-   ============================================================ */
-async function renderEstoque() {
-    const container = document.getElementById('view-container');
-    container.innerHTML = `
-        <div class="header-page">
-            <h1>Controle de Estoque</h1>
-        </div>
-        <div class="card">
-            <h3 style="margin-bottom:15px">Cadastrar Novo Item</h3>
-            <div class="form-grid">
-                <input type="text" id="est-pat" placeholder="Número do Patrimônio">
-                <select id="est-tipo">
-                    <option>Notebook</option>
-                    <option>Projetor</option>
-                    <option>Monitor</option>
-                </select>
-                <input type="text" id="est-mod" placeholder="Modelo / Marca">
-                <button onclick="cadastrarEstoque()">Adicionar ao Banco</button>
+    /* ============================================================
+    TELA: GESTÃO DE ESTOQUE
+    ============================================================ */
+    async function renderEstoque() {
+        const container = document.getElementById('view-container');
+        container.innerHTML = `
+            <div class="header-page">
+                <h1>Controle de Estoque</h1>
             </div>
-        </div>
-        <div class="card">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr><th>Patrimônio</th><th>Tipo</th><th>Modelo</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="lista-estoque"></tbody>
-                </table>
+            <div class="card">
+                <h3 style="margin-bottom:15px">Cadastrar Novo Item</h3>
+                <div class="form-grid">
+                    <input type="text" id="est-pat" placeholder="Número do Patrimônio">
+                    <select id="est-tipo">
+                        <option>Notebook</option>
+                        <option>Projetor</option>
+                        <option>Monitor</option>
+                    </select>
+                    <input type="text" id="est-mod" placeholder="Modelo / Marca">
+                    <button onclick="cadastrarEstoque()">Adicionar ao Banco</button>
+                </div>
             </div>
-        </div>
-    `;
-    carregarTabelaEstoque();
-}
-
-async function cadastrarEstoque() {
-    const p = document.getElementById('est-pat').value;
-    const t = document.getElementById('est-tipo').value;
-    const m = document.getElementById('est-mod').value;
-
-    if (!p) return alert("Patrimônio obrigatório.");
-
-    const { error } = await supabaseClient
-        .from('estoque')
-        .insert([{
-            patrimonio: p,
-            tipo: t,
-            modelo: m,
-            status: 'disponivel'
-        }]);
-
-    if (error) {
-        console.error("Erro ao salvar:", error);
-        alert("Erro ao salvar no banco. Verifique se o patrimônio já existe.");
-    } else {
-        alert("Item cadastrado!");
-        document.getElementById('est-pat').value = '';
-        document.getElementById('est-mod').value = '';
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Patrimônio</th><th>Tipo</th><th>Modelo</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="lista-estoque"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
         carregarTabelaEstoque();
     }
-} 
+
+    async function cadastrarEstoque() {
+        const p = document.getElementById('est-pat').value;
+        const t = document.getElementById('est-tipo').value;
+        const m = document.getElementById('est-mod').value;
+
+        if (!p) return alert("Patrimônio obrigatório.");
+
+        const { error } = await supabaseClient
+            .from('estoque')
+            .insert([{
+                patrimonio: p,
+                tipo: t,
+                modelo: m,
+                status: 'disponivel'
+            }]);
+
+        if (error) {
+            console.error("Erro ao salvar:", error);
+            alert("Erro ao salvar no banco. Verifique se o patrimônio já existe.");
+        } else {
+            alert("Item cadastrado!");
+            document.getElementById('est-pat').value = '';
+            document.getElementById('est-mod').value = '';
+            carregarTabelaEstoque();
+        }
+    } 
 async function carregarTabelaEstoque() {
     const { data: dados, error } = await supabaseClient
         .from('estoque')
@@ -889,10 +937,11 @@ async function visualizarTermo(id) {
             </p>
 
             <p style="margin:10px 0 3px 0;"><b>Observações:</b></p>
+            <p style="margin:2px 0;">Data de devolução:____/____/______._______________________________</p>
             <p style="margin:2px 0;">______________________________________________________________</p>
             
 
-            <p style="margin:15px 0 5px 0;"><b>Responsável pela conferência: ____________________________________</b></p>
+            <p style="margin:15px 0 5px 0;">Responsável pela conferência: ____________________________________</p>
             
 
             
@@ -944,11 +993,11 @@ async function visualizarTermo(id) {
                 <p style="margin:3px 0;">  ( ) Em conformidade   
                 ( ) Com observações</p>
 
-                <p style="margin:10px 0 3px 0;"><b>Observações:</b></p>
-                <p style="margin:2px 0;">______________________________________________________________</p>
+                <p style="margin:2px 0;">Data de devolução:____/____/______._______________________________</p>
+            <p style="margin:2px 0;">______________________________________________________________</p>
                 
 
-                <p style="margin:15px 0 5px 0;"><b>Responsável pela conferência:</b>
+                <p style="margin:15px 0 5px 0;">Responsável pela conferência:
                 ____________________________________</p>
 
                                
