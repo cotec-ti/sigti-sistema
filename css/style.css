@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* --- VARIÁVEIS DE COR E TEMA --- */
         :root {
             --primary: #0f172a;
@@ -272,4 +273,265 @@
                     #print-area, #print-area * { visibility: visible; }
                     #print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; color: black !important; }
                     .no-print { display: none; }
+=======
+/* --- VARIÁVEIS DE COR E TEMA --- */
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --sidebar-width: 280px;
+        }
+
+        body.dark-mode {
+            --primary: #020617;
+            --secondary: #1e293b;
+            --accent: #60a5fa;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        /* --- RESET E ESTILOS GERAIS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- TELA DE LOGIN --- */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .login-box {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-box h2 {
+            color: #0f172a;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        /* --- BARRA LATERAL --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary);
+            color: white;
+            padding: 32px 20px;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .nav-group { margin-bottom: 20px; }
+        .nav-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #475569;
+            margin-bottom: 8px;
+            padding-left: 12px;
+            font-weight: 700;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            color: #94a3b8;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .nav-item.active { border-left: 4px solid var(--accent); }
+
+        /* --- ÁREA PRINCIPAL --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            width: calc(100% - var(--sidebar-width));
+            max-width: 1400px;
+        }
+
+        .header-page {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 28px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        /* --- TABELAS --- */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th {
+            padding: 16px;
+            background: var(--bg);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+        td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        tr:hover { background-color: rgba(59, 130, 246, 0.02); }
+
+        /* --- FORMULÁRIOS E BOTÕES --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        /* Modal de Visualização */
+        #modal-termo {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+            color: black;
+        }
+        .btn-print-floating {
+            position: sticky;
+            top: 0;
+            float: right;
+            margin-bottom: 20px;
+         }
+            @media print {
+            body * { visibility: hidden !important; }
+            #print-area, #print-area * { visibility: visible !important; }
+            #print-area { 
+                position: absolute; 
+                left: 0; top: 0; width: 100%; 
+                display: block !important; 
+            }
+            .no-print { display: none !important; }
+            }
+
+            button:hover { background: var(--accent-hover); transform: translateY(-1px); }
+            button.secondary { background: #64748b; }
+                button.outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+
+                /* --- STATUS BADGES --- */
+                .badge {
+                    padding: 4px 10px;
+                    border-radius: 99px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                }
+                .status-pendente { background: #fef3c7; color: #92400e; }
+                .status-aprovado { background: #dcfce7; color: #166534; }
+                .status-uso { background: #dbeafe; color: #1e40af; }
+
+                /* --- PRINT VIEW (TERMO) --- */
+        @media print {
+                    body * { visibility: hidden; }
+                    #print-area, #print-area * { visibility: visible; }
+                    #print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; color: black !important; }
+                    .no-print { display: none; }
+>>>>>>> a872a6567bc7b43f57391fe56831b21a218b638f
                 }

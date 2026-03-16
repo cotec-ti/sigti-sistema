@@ -279,7 +279,7 @@ async function visualizarTermo(id) {
             width: 21cm; 
             min-height: 29.7cm; 
             margin: 0 auto; 
-            background-image: url('/img/timbrado.jpeg'); 
+            background-image: url('img/timbrado.jpeg'); 
             background-size: 100% 100%; 
             background-repeat: no-repeat; 
             background-position: center;
