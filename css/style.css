@@ -54,9 +54,10 @@
             background: var(--white);
             padding: 40px;
             border-radius: 16px;
-            width: 100%;
+            width: 90%;
             max-width: 400px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
         }
 
         .login-box h2 {
@@ -67,7 +68,7 @@
             letter-spacing: -1px;
         }
 
-        /* --- BARRA LATERAL --- */
+       
         /* --- BARRA LATERAL --- */
 .sidebar {
     width: var(--sidebar-width);
