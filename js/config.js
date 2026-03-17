@@ -2,12 +2,10 @@
    CONEXÃO OFICIAL - SIGTI
    ============================================================ */
 const SB_URL = 'https://ilyhtxionytobqkerdka.supabase.co';
-const SB_KEY = 'sb_publishable_iNHedC8e8Ztp46umNmFEQQ_NV-vq8Kt';
+const SB_KEY = 'sb_publishable_iNHedC8e8Ztp46umNmFEQQ_NV-vq8Kt'; 
 
 // Inicializa o cliente do Supabase
-//var supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-
-var supabase = supabase.createClient(SB_URL, SB_KEY);
+var supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
 // Variável para controle de sessão
 let currentUser = null;
