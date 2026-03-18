@@ -8,7 +8,7 @@ async function renderUsuarios() {
                     <div class="form-grid">
                         <input type="text" id="u-nome" placeholder="Nome Completo">
                         <input type="number" id="u-mat" placeholder="Matrícula">
-                        <input type="email" id="u-email" placeholder="E-mail Corporativo" autocomplete="new-password">
+                        <input type="email" id="u-email" placeholder="E-mail" autocomplete="new-password">
                         <input type="password" id="u-senha" placeholder="Senha Provisória" autocomplete="new-password">
                         <select id="u-ti">
                             <option value="false">Colaborador</option>
