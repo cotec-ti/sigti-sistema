@@ -95,15 +95,37 @@ async function renderPerfil() {
 // Avatar no Perfil
 
 window.addEventListener('DOMContentLoaded', () => {
+    // Seletores
     const avatarImg = document.getElementById('perfil-avatar');
     const avatarSelect = document.getElementById('perfil-select');
-    
-    if (!avatarImg || !avatarSelect) return; // evita erros se o HTML não existir
 
-    // lista de 20 figuras
-    const avatars = Array.from({ length: 20 }, (_, i) => `figures/figure${i+1}.png`);
+    if (!avatarImg || !avatarSelect) return; // Proteção caso HTML não exista
 
-    // popula dropdown
+    // Lista de 20 avatares online (Pravatar)
+    const avatars = [
+        "https://i.pravatar.cc/150?img=1",
+        "https://i.pravatar.cc/150?img=2",
+        "https://i.pravatar.cc/150?img=3",
+        "https://i.pravatar.cc/150?img=4",
+        "https://i.pravatar.cc/150?img=5",
+        "https://i.pravatar.cc/150?img=6",
+        "https://i.pravatar.cc/150?img=7",
+        "https://i.pravatar.cc/150?img=8",
+        "https://i.pravatar.cc/150?img=9",
+        "https://i.pravatar.cc/150?img=10",
+        "https://i.pravatar.cc/150?img=11",
+        "https://i.pravatar.cc/150?img=12",
+        "https://i.pravatar.cc/150?img=13",
+        "https://i.pravatar.cc/150?img=14",
+        "https://i.pravatar.cc/150?img=15",
+        "https://i.pravatar.cc/150?img=16",
+        "https://i.pravatar.cc/150?img=17",
+        "https://i.pravatar.cc/150?img=18",
+        "https://i.pravatar.cc/150?img=19",
+        "https://i.pravatar.cc/150?img=20"
+    ];
+
+    // Popula dropdown
     avatars.forEach((av, idx) => {
         const option = document.createElement('option');
         option.value = av;
@@ -111,7 +133,11 @@ window.addEventListener('DOMContentLoaded', () => {
         avatarSelect.appendChild(option);
     });
 
-    // atualizar avatar ao selecionar
+    // Simulação de currentUser
+    // Em produção, substitua por currentUser real do seu sistema
+    let currentUser = JSON.parse(localStorage.getItem('sigti_user')) || { avatar: avatars[0], id: 1 };
+
+    // Atualizar avatar quando selecionar
     avatarSelect.addEventListener('change', () => {
         const src = avatarSelect.value;
         if (!currentUser || !src) return;
@@ -119,7 +145,7 @@ window.addEventListener('DOMContentLoaded', () => {
         avatarImg.src = src;
         currentUser.avatar = src;
         localStorage.setItem('sigti_user', JSON.stringify(currentUser));
-
+        
         supabaseClient
             .from('usuarios')
             .update({ avatar: src })
@@ -127,11 +153,11 @@ window.addEventListener('DOMContentLoaded', () => {
             .then(({ error }) => {
                 if (error) console.error("Erro ao salvar avatar:", error);
             });
+        
     });
 
-    // carregar avatar atual ao abrir perfil
+    // Carregar avatar atual
     function carregarAvatar() {
-        if (!currentUser) return;
         const src = currentUser.avatar || avatars[0];
         avatarImg.src = src;
         avatarSelect.value = src;
