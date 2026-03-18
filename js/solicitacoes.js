@@ -301,23 +301,31 @@ async function processarOS(id, uid, tipo, nome) {
     /* --- TABELA (LIMPA E SEM DUPLICAÇÃO) --- */
     async function carregarTabelaOS() {
     const { data: lista, error } = await supabaseClient
-        .from('solicitacoes').select('*').order('created_at', { ascending: false });
+        .from('solicitacoes')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) return;
+    if (error) {
+        console.error("Erro ao carregar solicitações:", error);
+        return;
+    }
 
     const tbody = document.getElementById('lista-os');
     if (!tbody) return;
 
-    tbody.innerHTML = lista.map(os => {
+    // Filtra itens nulos ou undefined
+    const listaValida = lista.filter(os => os != null);
+
+    tbody.innerHTML = listaValida.map(os => {
         let botoesAcao = '---';
-        
+
         // REGRA 1: Se a OS é MINHA e foi devolvida, eu preciso EDITAR
-        if (os.usuario_id === currentUser.id && os.status === 'devolvida') {
+        if (currentUser && os.usuario_id === currentUser.id && os.status === 'devolvida') {
             botoesAcao = `<button onclick="abrirModalEdicao('${os.id}', '${os.descricao}')" style="background:#6366f1; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Corrigir OS</button>`;
         } 
         
         // REGRA 2: Se eu sou TI, eu vejo os botões de gestão (Aceitar/Devolver)
-        else if (currentUser.is_ti) {
+        else if (currentUser && currentUser.is_ti) {
             if (os.status === 'pendente') {
                 botoesAcao = `
                     <button onclick="processarOS('${os.id}', '${os.usuario_id}', '${os.tipo}', '${os.usuario_nome}')" style="background:#22c55e; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">Aceitar</button>
@@ -330,11 +338,11 @@ async function processarOS(id, uid, tipo, nome) {
 
         return `
             <tr>
-                <td>#${os.id.toString().slice(-4)}</td>
-                <td>${new Date(os.created_at).toLocaleDateString()}</td>
-                <td>${os.usuario_nome}</td>
-                <td>${os.tipo}</td>
-                <td><span class="badge status-${os.status}">${os.status.toUpperCase()}</span></td>
+                <td>#${os.id?.toString().slice(-4) || '----'}</td>
+                <td>${os.created_at ? new Date(os.created_at).toLocaleDateString() : '----'}</td>
+                <td>${os.usuario_nome || '----'}</td>
+                <td>${os.tipo || '----'}</td>
+                <td><span class="badge status-${os.status || 'desconhecido'}">${os.status ? os.status.toUpperCase() : '---'}</span></td>
                 <td>${botoesAcao}</td>
             </tr>
         `;
