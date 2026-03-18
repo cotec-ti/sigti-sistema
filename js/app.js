@@ -1,14 +1,4 @@
-/* ============================================================
-   CONEXÃO SUPABASE
-   ============================================================ */
-const SB_URL = 'https://ilyhtxionytobqkerdka.supabase.co';
-const SB_KEY = 'sb_publishable_iNHedC8e8Ztp46umNmFEQQ_NV-vq8Kt';
-var supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-/* ============================================================
-   VARIÁVEL GLOBAL DE SESSÃO
-   ============================================================ */
-let currentUser = null;
 let telaAtiva = null;
 
 /* ============================================================
