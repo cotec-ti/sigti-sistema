@@ -1,5 +1,12 @@
 async function renderTermos() {
     const container = document.getElementById('view-container');
+    if (!container) return; // garante que o container existe
+
+    // Verifica currentUser
+    if (!currentUser) {
+        container.innerHTML = `<p>Erro: nenhum usuário logado.</p>`;
+        return;
+    }
 
     // Busca no Supabase
     let query = supabaseClient.from('termos').select('*');
@@ -8,7 +15,6 @@ async function renderTermos() {
     }
 
     const { data: lista, error } = await query.order('created_at', { ascending: false });
-
     if (error) return console.error("Erro Supabase:", error);
 
     container.innerHTML = `

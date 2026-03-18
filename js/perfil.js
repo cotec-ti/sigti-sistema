@@ -1,6 +1,14 @@
 async function renderPerfil() {
     const container = document.getElementById('view-container');
-    
+    if (!container) return; // garante que o container existe
+
+    // Verifica se currentUser existe
+    if (!currentUser) {
+        container.innerHTML = `<p>Erro: nenhum usuário logado.</p>`;
+        return;
+    }
+
+    // Agora é seguro acessar currentUser.nome, currentUser.is_ti, etc.
     container.innerHTML = `
         <h1>Meu Perfil</h1>
         
@@ -18,11 +26,11 @@ async function renderPerfil() {
             <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
                 <div>
                     <label style="font-size: 12px; color: #64748b;">Matrícula</label>
-                    <input type="text" value="${currentUser.matricula}" disabled style="background: #f1f5f9;">
+                    <input type="text" value="${currentUser.matricula || ''}" disabled style="background: #f1f5f9;">
                 </div>
                 <div>
                     <label style="font-size: 12px; color: #64748b;">E-mail Corporativo</label>
-                    <input type="text" value="${currentUser.email}" disabled style="background: #f1f5f9;">
+                    <input type="text" value="${currentUser.email || ''}" disabled style="background: #f1f5f9;">
                 </div>
             </div>
 
@@ -40,7 +48,7 @@ async function renderPerfil() {
     `;
 }
 
-      async function atualizarSenhaPerfil() {
+    async function atualizarSenhaPerfil() {
     const nova = document.getElementById('p-senha-nova').value.trim();
     const confirma = document.getElementById('p-senha-confirma').value.trim();
 
@@ -91,77 +99,3 @@ async function renderPerfil() {
         alert("Erro: " + err.message);
     }
 }
-///////////////////////////////////////////////////////////////
-// Avatar no Perfil
-
-window.addEventListener('DOMContentLoaded', () => {
-    // Seletores
-    const avatarImg = document.getElementById('perfil-avatar');
-    const avatarSelect = document.getElementById('perfil-select');
-
-    if (!avatarImg || !avatarSelect) return; // Proteção caso HTML não exista
-
-    // Lista de 20 avatares online (Pravatar)
-    const avatars = [
-        "https://i.pravatar.cc/150?img=1",
-        "https://i.pravatar.cc/150?img=2",
-        "https://i.pravatar.cc/150?img=3",
-        "https://i.pravatar.cc/150?img=4",
-        "https://i.pravatar.cc/150?img=5",
-        "https://i.pravatar.cc/150?img=6",
-        "https://i.pravatar.cc/150?img=7",
-        "https://i.pravatar.cc/150?img=8",
-        "https://i.pravatar.cc/150?img=9",
-        "https://i.pravatar.cc/150?img=10",
-        "https://i.pravatar.cc/150?img=11",
-        "https://i.pravatar.cc/150?img=12",
-        "https://i.pravatar.cc/150?img=13",
-        "https://i.pravatar.cc/150?img=14",
-        "https://i.pravatar.cc/150?img=15",
-        "https://i.pravatar.cc/150?img=16",
-        "https://i.pravatar.cc/150?img=17",
-        "https://i.pravatar.cc/150?img=18",
-        "https://i.pravatar.cc/150?img=19",
-        "https://i.pravatar.cc/150?img=20"
-    ];
-
-    // Popula dropdown
-    avatars.forEach((av, idx) => {
-        const option = document.createElement('option');
-        option.value = av;
-        option.innerText = `Avatar ${idx + 1}`;
-        avatarSelect.appendChild(option);
-    });
-
-    // Simulação de currentUser
-    // Em produção, substitua por currentUser real do seu sistema
-    let currentUser = JSON.parse(localStorage.getItem('sigti_user')) || { avatar: avatars[0], id: 1 };
-
-    // Atualizar avatar quando selecionar
-    avatarSelect.addEventListener('change', () => {
-        const src = avatarSelect.value;
-        if (!currentUser || !src) return;
-
-        avatarImg.src = src;
-        currentUser.avatar = src;
-        localStorage.setItem('sigti_user', JSON.stringify(currentUser));
-        
-        supabaseClient
-            .from('usuarios')
-            .update({ avatar: src })
-            .eq('id', currentUser.id)
-            .then(({ error }) => {
-                if (error) console.error("Erro ao salvar avatar:", error);
-            });
-        
-    });
-
-    // Carregar avatar atual
-    function carregarAvatar() {
-        const src = currentUser.avatar || avatars[0];
-        avatarImg.src = src;
-        avatarSelect.value = src;
-    }
-
-    carregarAvatar();
-});
