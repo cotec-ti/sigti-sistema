@@ -91,3 +91,51 @@ async function renderPerfil() {
         alert("Erro: " + err.message);
     }
 }
+///////////////////////////////////////////////////////////////
+// Avatar no Perfil
+
+window.addEventListener('DOMContentLoaded', () => {
+    const avatarImg = document.getElementById('perfil-avatar');
+    const avatarSelect = document.getElementById('perfil-select');
+    
+    if (!avatarImg || !avatarSelect) return; // evita erros se o HTML não existir
+
+    // lista de 20 figuras
+    const avatars = Array.from({ length: 20 }, (_, i) => `figures/figure${i+1}.png`);
+
+    // popula dropdown
+    avatars.forEach((av, idx) => {
+        const option = document.createElement('option');
+        option.value = av;
+        option.innerText = `Avatar ${idx + 1}`;
+        avatarSelect.appendChild(option);
+    });
+
+    // atualizar avatar ao selecionar
+    avatarSelect.addEventListener('change', () => {
+        const src = avatarSelect.value;
+        if (!currentUser || !src) return;
+
+        avatarImg.src = src;
+        currentUser.avatar = src;
+        localStorage.setItem('sigti_user', JSON.stringify(currentUser));
+
+        supabaseClient
+            .from('usuarios')
+            .update({ avatar: src })
+            .eq('id', currentUser.id)
+            .then(({ error }) => {
+                if (error) console.error("Erro ao salvar avatar:", error);
+            });
+    });
+
+    // carregar avatar atual ao abrir perfil
+    function carregarAvatar() {
+        if (!currentUser) return;
+        const src = currentUser.avatar || avatars[0];
+        avatarImg.src = src;
+        avatarSelect.value = src;
+    }
+
+    carregarAvatar();
+});
