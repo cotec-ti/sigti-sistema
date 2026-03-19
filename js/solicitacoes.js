@@ -104,7 +104,7 @@ async function renderSolicitacoes() {
         const { error } = await supabaseClient
             .from('solicitacoes')
             .insert([{
-                usuario_id: currentUser.id,
+                usuario_id: user.id,
                 usuario_nome: currentUser.nome,
                 tipo: tipo,
                 descricao: desc,
