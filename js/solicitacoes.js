@@ -83,7 +83,7 @@ async function renderSolicitacoes() {
     async function enviarOS() {
     try {
         const tipo = document.getElementById('os-tipo').value;
-        const desc = document.getElementById('os-descricao').value;
+        const desc = document.getElementById('os-desc').value;
 
         const { data: { user } } = await supabaseClient.auth.getUser();
 
