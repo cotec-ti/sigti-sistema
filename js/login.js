@@ -20,7 +20,7 @@ async function fazerLogin() {
         if (usuario) {
 
             // 🔥 LOGIN NO SUPABASE AUTH (OBRIGATÓRIO)
-            const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                 email: email,
                 password: senha
             });
