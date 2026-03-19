@@ -1,3 +1,4 @@
+
 async function fazerLogin() {
     const email = document.getElementById('log-email').value.trim().toLowerCase();
     const senha = document.getElementById('log-senha').value.trim();
@@ -17,6 +18,20 @@ async function fazerLogin() {
         if (error) throw error;
 
         if (usuario) {
+
+            // 🔥 LOGIN NO SUPABASE AUTH (OBRIGATÓRIO)
+            const { error: authError } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: senha
+            });
+
+            if (authError) {
+                console.error("Erro no Auth:", authError);
+                alert("Erro na autenticação no Supabase");
+                return;
+            }
+
+            // 🔹 seu sistema continua normal
             currentUser = usuario;
             localStorage.setItem('sigti_user', JSON.stringify(usuario));
 
@@ -36,7 +51,7 @@ async function fazerLogin() {
 
         } else {
             errorMsg.style.display = 'block';
-        }
+}
 
     } catch (err) {
         console.error("Erro no Login:", err);
