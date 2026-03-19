@@ -21,17 +21,17 @@ async function fazerLogin() {
 
             // 🔥 LOGIN NO SUPABASE AUTH (OBRIGATÓRIO)
             const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: senha
-});
+                email: email,
+                password: senha
+            });
 
-console.log("AUTH DATA:", authData);
-console.log("AUTH ERROR:", authError);
+            console.log("AUTH DATA:", authData);
+            console.log("AUTH ERROR:", authError);
 
-if (authError) {
-    alert("Erro no login Auth: " + authError.message);
-    return;
-}
+            if (authError) {
+                alert("Erro Auth: " + authError.message);
+                return;
+            }
 
             // 🔹 seu sistema continua normal
             currentUser = usuario;
