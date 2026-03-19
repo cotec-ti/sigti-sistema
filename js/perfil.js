@@ -1,19 +1,12 @@
+
 async function renderPerfil() {
     const container = document.getElementById('view-container');
-    if (!container) return; // garante que o container existe
-
-    // Verifica se currentUser existe
-    if (!currentUser) {
-        container.innerHTML = `<p>Erro: nenhum usuário logado.</p>`;
-        return;
-    }
-
-    // Agora é seguro acessar currentUser.nome, currentUser.is_ti, etc.
+    
     container.innerHTML = `
         <h1>Meu Perfil</h1>
         
-        <div class="card" style="max-width: 600px;">
-            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px;">
+        <div class="card" style="max-width: 600px !important;">
+            <div style="display: flex !important; align-items: center; gap: 20px; margin-bottom: 25px;">
                 <div style="width: 70px; height: 70px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold;">
                     ${currentUser.nome.charAt(0).toUpperCase()}
                 </div>
@@ -23,14 +16,14 @@ async function renderPerfil() {
                 </div>
             </div>
 
-            <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="form-grid" style="grid-template-columns: 1fr 1fr !important;">
                 <div>
                     <label style="font-size: 12px; color: #64748b;">Matrícula</label>
-                    <input type="text" value="${currentUser.matricula || ''}" disabled style="background: #f1f5f9;">
+                    <input type="text" value="${currentUser.matricula}" disabled style="background: #f1f5f9;">
                 </div>
                 <div>
                     <label style="font-size: 12px; color: #64748b;">E-mail Corporativo</label>
-                    <input type="text" value="${currentUser.email || ''}" disabled style="background: #f1f5f9;">
+                    <input type="text" value="${currentUser.email}" disabled style="background: #f1f5f9;">
                 </div>
             </div>
 
@@ -48,7 +41,7 @@ async function renderPerfil() {
     `;
 }
 
-    async function atualizarSenhaPerfil() {
+      async function atualizarSenhaPerfil() {
     const nova = document.getElementById('p-senha-nova').value.trim();
     const confirma = document.getElementById('p-senha-confirma').value.trim();
 

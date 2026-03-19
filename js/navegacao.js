@@ -28,7 +28,7 @@ window.navegar = function(tela, el) {
             renderHistorico();
             break;
         case 'perfil':
-            renderPerfil();
+            if(typeof renderPerfil === "function") renderPerfil();
             break;
     }
 };
