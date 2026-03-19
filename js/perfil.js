@@ -22,7 +22,7 @@ async function renderPerfil() {
                     <input type="text" value="${currentUser.matricula}" disabled style="background: #f1f5f9;">
                 </div>
                 <div>
-                    <label style="font-size: 12px; color: #64748b;">E-mail Corporativo</label>
+                    <label style="font-size: 12px; color: #64748b;">E-mail</label>
                     <input type="text" value="${currentUser.email}" disabled style="background: #f1f5f9;">
                 </div>
             </div>
