@@ -11,7 +11,7 @@ async function renderTermos() {
     // Busca no Supabase
     let query = supabaseClient.from('termos').select('*');
     if (!currentUser.is_ti) {
-        query = query.eq('usuario_id', currentUser.id);
+        query = query.eq('usuario_id', user.id);
     }
 
     const { data: lista, error } = await query.order('created_at', { ascending: false });
