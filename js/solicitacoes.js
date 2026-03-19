@@ -93,31 +93,29 @@ async function renderSolicitacoes() {
         }
 
         const { data, error } = await supabaseClient
-            .from('solicitacoes')
-            .insert([{
-                usuario_id: user.id,
-                usuario_nome: currentUser.nome,
-                tipo: tipo,
-                descricao: desc,
-                status: 'pendente'
-            }])
-            .select();
+    .from('solicitacoes')
+    .insert([{
+        usuario_id: user.id,
+        usuario_nome: currentUser.nome,
+        tipo: tipo,
+        descricao: desc,
+        status: 'pendente'
+    }])
+    .select();
 
-        console.log("DATA:", data);
-        console.log("ERROR:", error);
+console.log("DATA:", data);
+console.log("ERROR INSERT:", error);
 
-        if (error) {
-            console.error("Erro ao enviar solicitação:", error);
-            return;
-        }
+// 👇 log do email também
+const { data: emailData, error: emailError } = await supabaseClient.functions.invoke('enviar-email-os', {
+    body: {
+        usuario_nome: currentUser.nome,
+        descricao: desc
+    }
+});
 
-        // 🔥 mantém seu disparo de email
-        await supabaseClient.functions.invoke('enviar-email-os', {
-            body: {
-                usuario_nome: currentUser.nome,
-                descricao: desc
-            }
-        });
+console.log("EMAIL DATA:", emailData);
+console.log("EMAIL ERROR:", emailError);
 
         alert("Solicitação enviada com sucesso!");
 
