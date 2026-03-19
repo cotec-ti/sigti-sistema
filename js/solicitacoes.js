@@ -82,12 +82,15 @@ async function renderSolicitacoes() {
 
     async function enviarOS() {
     try {
+        const tipo = document.getElementById('tipo').value;
+        const desc = document.getElementById('descricao').value;
+
         const { data: { user } } = await supabaseClient.auth.getUser();
 
         if (!user) {
             alert("Usuário não está logado");
             return;
-}
+        }
 
         const { data, error } = await supabaseClient
             .from('solicitacoes')
@@ -108,6 +111,7 @@ async function renderSolicitacoes() {
             return;
         }
 
+        // 🔥 mantém seu disparo de email
         await supabaseClient.functions.invoke('enviar-email-os', {
             body: {
                 usuario_nome: currentUser.nome,
