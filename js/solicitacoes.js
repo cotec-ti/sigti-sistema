@@ -81,41 +81,32 @@ async function renderSolicitacoes() {
 
 
     async function enviarOS() {
-
-    const btn = document.getElementById('btn-enviar-os');
-
-    if (btn.disabled) return; // evita clique duplo
-
-    btn.disabled = true;
-    btn.innerText = "Enviando...";
-
-    const tipo = document.getElementById('os-tipo').value;
-    const desc = document.getElementById('os-desc').value;
-
-    if (!desc) {
-        alert("Descreva o problema!");
-        btn.disabled = false;
-        btn.innerText = "Confirmar Abertura";
-        return;
-    }
-
     try {
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Usuário não está logado");
+            return;
+        }
 
         const { data, error } = await supabaseClient
-  .from('solicitacoes')
-  .insert([{
-    usuario_id: user.id,
-    usuario_nome: currentUser.nome,
-    tipo: tipo,
-    descricao: desc,
-    status: 'pendente'
-  }])
-  .select();
+            .from('solicitacoes')
+            .insert([{
+                usuario_id: user.id,
+                usuario_nome: currentUser.nome,
+                tipo: tipo,
+                descricao: desc,
+                status: 'pendente'
+            }])
+            .select();
 
-console.log("DATA:", data);
-console.log("ERROR:", error);
+        console.log("DATA:", data);
+        console.log("ERROR:", error);
 
-        if (error) throw error;
+        if (error) {
+            console.error("Erro ao enviar solicitação:", error);
+            return;
+        }
 
         await supabaseClient.functions.invoke('enviar-email-os', {
             body: {
@@ -132,11 +123,9 @@ console.log("ERROR:", error);
     } catch (err) {
         console.error(err);
         alert("Erro ao enviar solicitação.");
-
-        btn.disabled = false;
-        btn.innerText = "Confirmar Abertura";
     }
 }
+
 async function processarOS(id, uid, tipo, nome) {
     try {
         // 1️⃣ Buscar OS
