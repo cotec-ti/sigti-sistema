@@ -70,3 +70,17 @@ function resetarCronometro() {
         logout();
     }, 900000);
 }
+const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: senha
+});
+
+if (error) {
+    alert("Login inválido");
+    return;
+}
+
+// salva se quiser
+localStorage.setItem('sigti_user', JSON.stringify({
+    nome: "Usuário" // ou o que você já usa
+}));

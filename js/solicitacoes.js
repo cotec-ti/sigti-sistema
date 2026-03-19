@@ -82,12 +82,12 @@ async function renderSolicitacoes() {
 
     async function enviarOS() {
     try {
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+        const { data: { user } } = await supabaseClient.auth.getUser();
 
-        if (userError || !user) {
-            console.error("Usuário não está logado");
+        if (!user) {
+            alert("Usuário não está logado");
             return;
-        }
+}
 
         const { data, error } = await supabaseClient
             .from('solicitacoes')
