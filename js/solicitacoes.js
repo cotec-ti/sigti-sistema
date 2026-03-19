@@ -101,18 +101,19 @@ async function renderSolicitacoes() {
 
     try {
 
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-            if (userError) throw userError;
+        const { data, error } = await supabaseClient
+  .from('solicitacoes')
+  .insert([{
+    usuario_id: user.id,
+    usuario_nome: currentUser.nome,
+    tipo: tipo,
+    descricao: desc,
+    status: 'pendente'
+  }])
+  .select();
 
-            const { error } = await supabaseClient
-            .from('solicitacoes')
-            .insert([{
-                usuario_id: user.id,            // <- ID real do Supabase Auth
-                usuario_nome: currentUser.nome, // nome pode ficar do jeito que tá
-                tipo: tipo,
-                descricao: desc,
-                status: 'pendente'
-            }]);
+console.log("DATA:", data);
+console.log("ERROR:", error);
 
         if (error) throw error;
 
