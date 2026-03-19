@@ -1,21 +1,23 @@
 async function renderTermos() {
     const container = document.getElementById('view-container');
-    if (!container) return; // garante que o container existe
+    if (!container) return;
 
-    // Verifica currentUser
-    if (!currentUser) {
-        container.innerHTML = `<p>Erro: nenhum usuário logado.</p>`;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        container.innerHTML = `<p>Usuário não logado.</p>`;
         return;
     }
 
-    // Busca no Supabase
     let query = supabaseClient.from('termos').select('*');
+
     if (!currentUser.is_ti) {
         query = query.eq('usuario_id', user.id);
     }
 
     const { data: lista, error } = await query.order('created_at', { ascending: false });
     if (error) return console.error("Erro Supabase:", error);
+
 
     container.innerHTML = `
         <div class="header-page"><h1>Meus Termos e Documentos</h1></div>
