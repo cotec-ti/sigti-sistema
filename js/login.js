@@ -67,6 +67,7 @@ async function gerarHash(texto) {
 }
 
 function logout() {
+    // remove dados do usuário e recarrega a página
     localStorage.removeItem('sigti_user'); 
     window.location.reload();
 }
@@ -81,19 +82,10 @@ function resetarCronometro() {
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
         logout();
-    }, 900000);
-}
-const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: senha
-});
-
-if (error) {
-    alert("Login inválido");
-    return;
+    }, 900000); // 15 minutos
 }
 
-// salva se quiser
+// Se quiser salvar algum usuário "placeholder" sem await
 localStorage.setItem('sigti_user', JSON.stringify({
-    nome: "Usuário" // ou o que você já usa
+    nome: "Usuário" // ou outro dado que você queira
 }));
