@@ -1,9 +1,7 @@
 window.addEventListener('DOMContentLoaded', async () => {
     const salvo = localStorage.getItem('sigti_user');
-
     const { data: { user } } = await supabaseClient.auth.getUser();
 
-    // 🔥 Se não tiver sessão no Supabase → força logout
     if (!user) {
         logout();
         return;
@@ -28,7 +26,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Realtime (seguro)
+// Realtime
 if (typeof supabaseClient !== 'undefined') {
     supabaseClient
       .channel('monitor-geral')

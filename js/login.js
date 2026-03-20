@@ -18,7 +18,6 @@ async function fazerLogin() {
 
         if (usuario) {
 
-            // 🔥 LOGIN NO SUPABASE AUTH (OBRIGATÓRIO)
             const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                 email: email,
                 password: senha
@@ -32,7 +31,6 @@ async function fazerLogin() {
                 return;
             }
 
-            // 🔹 seu sistema continua normal
             currentUser = usuario;
             localStorage.setItem('sigti_user', JSON.stringify(usuario));
 
@@ -69,11 +67,17 @@ async function gerarHash(texto) {
 }
 
 async function logout() {
-    await supabaseClient.auth.signOut(); // 🔥 ESSENCIAL
+    await supabaseClient.auth.signOut();
     localStorage.removeItem('sigti_user');
     currentUser = null;
     clearTimeout(tempoInativo);
-    window.location.reload();
+
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('user-name').innerText = '';
+    document.getElementById('user-role').innerText = '';
+    document.getElementById('admin-menu').style.display = 'none';
 }
 
 let tempoInativo;
@@ -85,6 +89,6 @@ function resetarCronometro() {
 
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
-        logout(); // ✔ já chama o logout correto
-    }, 900000); // 15 min
+        logout();
+    }, 90000); 
 }
