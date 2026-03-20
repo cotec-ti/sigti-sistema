@@ -69,23 +69,25 @@ async function gerarHash(texto) {
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-function logout() {
-    localStorage.removeItem('sigti_user'); 
+async function logout() {
+    await supabaseClient.auth.signOut(); // 🔥 ESSENCIAL
+
+    localStorage.removeItem('sigti_user');
+
     window.location.reload();
 }
 
 let tempoInativo;
 
 function resetarCronometro() {
-
     if (!currentUser) return;
 
     clearTimeout(tempoInativo);
 
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
-        logout();
-    }, 900000);
+        logout(); // ✔ já chama o logout correto
+    }, 900000); // 15 min
 }
 const { data, error } = await supabaseClient.auth.signInWithPassword({
     email: email,
