@@ -6,7 +6,7 @@ const SB_KEY = 'sb_publishable_iNHedC8e8Ztp46umNmFEQQ_NV-vq8Kt';
 
 var supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
-let currentUser = null;
+window.currentUser = null;
 
 supabaseClient.from('usuarios').select('count', { count: 'exact', head: true })
     .then(res => {

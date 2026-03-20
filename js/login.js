@@ -1,6 +1,6 @@
 
 window.currentUser = null; 
-let currentUser = null;
+
 let tempoInativo;
 
 // 🔹 FUNÇÃO DE HASH (SHA-256)
