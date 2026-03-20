@@ -67,6 +67,11 @@ async function gerarHash(texto) {
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    senha: senha
+});
 }
 
 function logout() {
@@ -87,10 +92,7 @@ function resetarCronometro() {
         logout();
     }, 900000);
 }
-const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    senha: senha
-});
+
 
 if (error) {
     alert("Login inválido");
