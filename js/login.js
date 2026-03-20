@@ -9,13 +9,12 @@ async function fazerLogin() {
 
         // Busca usuário no banco
         const { data: usuario, error } = await supabaseClient
-            .from('usuarios')
-            .select('*')
-            .eq('email', email)
-            .eq('password', senhaHash)
-            .eq('ativo', true)
-            .maybeSingle();
-
+        .from('usuarios')
+        .select('*')
+        .eq('email', email)
+        .eq('senha', senhaHash)   // ✅ corrigido
+        .eq('ativo', true)
+        .maybeSingle();
         if (error) throw error;
 
         if (!usuario) {
