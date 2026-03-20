@@ -1,4 +1,3 @@
-
 async function fazerLogin() {
     const email = document.getElementById('log-email').value.trim().toLowerCase();
     const senha = document.getElementById('log-senha').value.trim();
@@ -53,7 +52,7 @@ async function fazerLogin() {
 
         } else {
             errorMsg.style.display = 'block';
-}
+        }
 
     } catch (err) {
         console.error("Erro no Login:", err);
@@ -62,18 +61,18 @@ async function fazerLogin() {
 }
 
 async function gerarHash(texto) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(texto);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const encoder = new TextEncoder();
+    const data = encoder.encode(texto);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 async function logout() {
     await supabaseClient.auth.signOut(); // 🔥 ESSENCIAL
-
     localStorage.removeItem('sigti_user');
-
+    currentUser = null;
+    clearTimeout(tempoInativo);
     window.location.reload();
 }
 
@@ -89,17 +88,3 @@ function resetarCronometro() {
         logout(); // ✔ já chama o logout correto
     }, 900000); // 15 min
 }
-const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: senha
-});
-
-if (error) {
-    alert("Login inválido");
-    return;
-}
-
-// salva se quiser
-localStorage.setItem('sigti_user', JSON.stringify({
-    nome: "Usuário" // ou o que você já usa
-}));
