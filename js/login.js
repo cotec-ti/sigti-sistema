@@ -1,7 +1,7 @@
-let currentUser = null;
-let tempoInativo;
+// login.js
 
-// 🔹 FUNÇÃO DE HASH (SHA-256)
+window.currentUser = null; // ⚠️ declaração global única
+
 async function gerarHash(texto) {
     const encoder = new TextEncoder();
     const data = encoder.encode(texto);
@@ -10,7 +10,6 @@ async function gerarHash(texto) {
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-// 🔹 FUNÇÃO DE LOGIN
 async function fazerLogin() {
     const email = document.getElementById('log-email').value.trim().toLowerCase();
     const senha = document.getElementById('log-senha').value.trim();
@@ -19,12 +18,12 @@ async function fazerLogin() {
     try {
         const senhaHash = await gerarHash(senha);
 
-        // 1️⃣ Busca na tabela usuarios
+        // Busca no banco customizado (opcional, depende da sua tabela)
         const { data: usuario, error } = await supabaseClient
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha', senhaHash)  // ✅ coluna correta
+            .eq('password', senhaHash)
             .eq('ativo', true)
             .maybeSingle();
 
@@ -35,7 +34,7 @@ async function fazerLogin() {
             return;
         }
 
-        // 2️⃣ LOGIN NO SUPABASE AUTH
+        // Login no Supabase Auth (obrigatório)
         const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: senha
@@ -46,10 +45,13 @@ async function fazerLogin() {
             return;
         }
 
-        // 3️⃣ LOGIN LOCAL
-        currentUser = usuario;
+        // Salva usuário global e localStorage
+        window.currentUser = usuario;
         localStorage.setItem('sigti_user', JSON.stringify(usuario));
 
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'flex';
+        document.getElementById('app').style.display = 'block';
         document.getElementById('user-name').innerText = usuario.nome;
         document.getElementById('user-role').innerText = usuario.is_ti ? "Administrador TI" : "Colaborador";
 
@@ -57,14 +59,12 @@ async function fazerLogin() {
             document.getElementById('admin-menu').style.display = 'block';
         }
 
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('sidebar').style.display = 'flex';
-        document.getElementById('app').style.display = 'block';
+        // Navega para a tela principal
+        if (typeof navegar === "function") {
+            navegar('solicitacoes');
+        }
 
-        navegar('solicitacoes');
-
-        // 🔹 Inicia cronômetro de inatividade
-        resetarCronometro();
+        resetarCronometro(); // Ativa cronômetro de inatividade
 
     } catch (err) {
         console.error("Erro no Login:", err);
@@ -72,54 +72,64 @@ async function fazerLogin() {
     }
 }
 
-// 🔹 LOGOUT
+// Logout global
 async function logout() {
     await supabaseClient.auth.signOut(); // desloga do Supabase
     localStorage.removeItem('sigti_user'); // limpa usuário local
+    window.currentUser = null;
     location.reload(); // recarrega página
 }
 
-// 🔹 CRONÔMETRO DE INATIVIDADE (15min)
+// Cronômetro de inatividade
+let tempoInativo;
 function resetarCronometro() {
     if (!currentUser) return;
 
     clearTimeout(tempoInativo);
+
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
         logout();
     }, 900000); // 15 min
 }
 
-// 🔹 ONLOAD: verifica sessão e carrega usuário
-window.addEventListener('DOMContentLoaded', async () => {
-    const salvo = localStorage.getItem('sigti_user');
-    const { data: { user } } = await supabaseClient.auth.getUser();
-
-    if (!user) {
-        logout();
-        return;
-    }
-
-    if (salvo) {
-        currentUser = JSON.parse(salvo);
-
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('sidebar').style.display = 'flex';
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('user-name').innerText = currentUser.nome;
-        document.getElementById('user-role').innerText = currentUser.is_ti ? 'Administrador TI' : 'Colaborador';
-
-        if (currentUser.is_ti) {
-            document.getElementById('admin-menu').style.display = 'block';
-        }
-
-        if (typeof navegar === "function") {
-            navegar('solicitacoes', document.querySelector('.nav-item'));
-        }
-
-        resetarCronometro();
-    }
+// Reseta cronômetro em eventos de interação
+['click', 'mousemove', 'keydown'].forEach(ev => {
+    window.addEventListener(ev, resetarCronometro);
 });
 
-// 🔹 Torna logout global para botão
-window.logout = logout;
+// Ao carregar a página, tenta restaurar sessão
+window.addEventListener('DOMContentLoaded', async () => {
+    const salvo = localStorage.getItem('sigti_user');
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        if (!user) {
+            logout();
+            return;
+        }
+
+        if (salvo) {
+            window.currentUser = JSON.parse(salvo);
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'flex';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('user-name').innerText = currentUser.nome;
+            document.getElementById('user-role').innerText = currentUser.is_ti ? 'Administrador TI' : 'Colaborador';
+
+            if (currentUser.is_ti) {
+                document.getElementById('admin-menu').style.display = 'block';
+            }
+
+            if (typeof navegar === "function") {
+                navegar('solicitacoes');
+            }
+
+            resetarCronometro();
+        }
+    } catch (err) {
+        console.error("Erro ao restaurar sessão:", err);
+        logout();
+    }
+});
