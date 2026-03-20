@@ -38,20 +38,8 @@ async function fazerLogin() {
         currentUser = usuario;
         localStorage.setItem('sigti_user', JSON.stringify(usuario));
 
-        document.getElementById('user-name').innerText = usuario.nome;
-        document.getElementById('user-role').innerText = usuario.is_ti ? "Administrador TI" : "Colaborador";
-
-        if (usuario.is_ti) {
-            document.getElementById('admin-menu').style.display = 'block';
-        }
-
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('sidebar').style.display = 'flex';
-        document.getElementById('app').style.display = 'block';
-
-        if (typeof navegar === "function") {
-            navegar('solicitacoes');
-        }
+        mostrarApp();
+        navegar('solicitacoes');
 
     } catch (err) {
         console.error("Erro no Login:", err);
@@ -69,15 +57,14 @@ async function gerarHash(texto) {
 }
 
 /* ---------------- LOGOUT ---------------- */
-window.logout = async function() {
+async function logout() {
     await supabaseClient.auth.signOut();
     localStorage.removeItem('sigti_user');
-    location.reload();
+    esconderApp();
 }
 
 /* ---------------- CRONOMETRO INATIVIDADE ---------------- */
 let tempoInativo;
-
 function resetarCronometro() {
     if (!currentUser) return;
 
@@ -86,48 +73,55 @@ function resetarCronometro() {
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
         logout();
-    }, 90000); // 7 min
+    }, 900000); // 15 min
+}
+
+/* ---------------- MOSTRAR / ESCONDER APP ---------------- */
+function mostrarApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('sidebar').style.display = 'flex';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-name').innerText = currentUser.nome;
+    document.getElementById('user-role').innerText = currentUser.is_ti ? 'Administrador TI' : 'Colaborador';
+
+    if (currentUser.is_ti) {
+        document.getElementById('admin-menu').style.display = 'block';
+    }
+}
+
+function esconderApp() {
+    document.getElementById('login-screen').style.display = 'block';
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
 }
 
 /* ---------------- DOM CONTENT LOADED ---------------- */
 window.addEventListener('DOMContentLoaded', async () => {
     const salvo = localStorage.getItem('sigti_user');
 
-    try {
-        const { data: { user } } = await supabaseClient.auth.getUser();
+    if (salvo) {
+        currentUser = JSON.parse(salvo);
 
-        // Se não houver usuário logado no Supabase, apenas mostra a tela de login
-        if (!user) {
-            document.getElementById('login-screen').style.display = 'block';
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('app').style.display = 'none';
+        // Verifica sessão Supabase (opcional)
+        try {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                // Não faz logout, apenas mostra login
+                esconderApp();
+                return;
+            }
+        } catch (err) {
+            console.error("Erro ao verificar sessão:", err);
+            esconderApp();
             return;
         }
 
-        // Se tiver usuário salvo localmente, restaura sessão
-        if (salvo) {
-            currentUser = JSON.parse(salvo);
-
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'flex';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('user-name').innerText = currentUser.nome;
-            document.getElementById('user-role').innerText = currentUser.is_ti ? 'Administrador TI' : 'Colaborador';
-
-            if (currentUser.is_ti) {
-                document.getElementById('admin-menu').style.display = 'block';
-            }
-
-            if (typeof navegar === "function") {
-                navegar('solicitacoes', document.querySelector('.nav-item'));
-            }
-        }
-
-    } catch (err) {
-        console.error("Erro ao verificar sessão:", err);
-        // não faz logout, apenas mostra login
-        document.getElementById('login-screen').style.display = 'block';
-        document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('app').style.display = 'none';
+        mostrarApp();
+        if (typeof navegar === "function") navegar('solicitacoes');
+    } else {
+        esconderApp();
     }
 });
+
+// Torna logout global para HTML
+window.logout = logout;
