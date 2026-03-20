@@ -11,7 +11,7 @@ async function fazerLogin() {
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('password', senhaHash)
+            .eq('senha', senhaHash)
             .eq('ativo', true)
             .maybeSingle();
 
