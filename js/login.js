@@ -11,7 +11,7 @@ async function fazerLogin() {
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha', senhaHash)
+            .eq('password', senhaHash)
             .eq('ativo', true)
             .maybeSingle();
 
@@ -67,32 +67,32 @@ async function gerarHash(texto) {
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    senha: senha
-});
 }
 
-function logout() {
-    localStorage.removeItem('sigti_user'); 
+async function logout() {
+    await supabaseClient.auth.signOut(); // 🔥 ESSENCIAL
+
+    localStorage.removeItem('sigti_user');
+
     window.location.reload();
 }
 
 let tempoInativo;
 
 function resetarCronometro() {
-
     if (!currentUser) return;
 
     clearTimeout(tempoInativo);
 
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
-        logout();
-    }, 900000);
+        logout(); // ✔ já chama o logout correto
+    }, 900000); // 15 min
 }
-
+const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: senha
+});
 
 if (error) {
     alert("Login inválido");

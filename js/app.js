@@ -1,5 +1,13 @@
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const salvo = localStorage.getItem('sigti_user');
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    // 🔥 Se não tiver sessão no Supabase → força logout
+    if (!user) {
+        logout();
+        return;
+    }
 
     if (salvo) {
         currentUser = JSON.parse(salvo);
