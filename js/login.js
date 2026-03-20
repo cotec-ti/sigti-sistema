@@ -7,53 +7,50 @@ async function fazerLogin() {
     try {
         const senhaHash = await gerarHash(senha);
 
+        // verifica se usuário existe no seu DB
         const { data: usuario, error } = await supabaseClient
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha', senhaHash)
+            .eq('password', senhaHash)
             .eq('ativo', true)
             .maybeSingle();
 
         if (error) throw error;
 
-        if (usuario) {
-
-            // 🔥 LOGIN NO SUPABASE AUTH (OBRIGATÓRIO)
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                email: email,
-                password: senha
-            });
-
-            console.log("AUTH DATA:", authData);
-            console.log("AUTH ERROR:", authError);
-
-            if (authError) {
-                alert("Erro Auth: " + authError.message);
-                return;
-            }
-
-            // 🔹 seu sistema continua normal
-            currentUser = usuario;
-            localStorage.setItem('sigti_user', JSON.stringify(usuario));
-
-            document.getElementById('user-name').innerText = usuario.nome;
-            document.getElementById('user-role').innerText =
-                usuario.is_ti ? "Administrador TI" : "Colaborador";
-
-            if (usuario.is_ti) {
-                document.getElementById('admin-menu').style.display = 'block';
-            }
-
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'flex';
-            document.getElementById('app').style.display = 'block';
-
-            navegar('solicitacoes');
-
-        } else {
+        if (!usuario) {
             errorMsg.style.display = 'block';
-}
+            return;
+        }
+
+        // faz login no Supabase Auth
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: senha
+        });
+
+        if (authError) {
+            alert("Login inválido: " + authError.message);
+            return;
+        }
+
+        // salva info do usuário
+        currentUser = usuario;
+        localStorage.setItem('sigti_user', JSON.stringify(usuario));
+
+        document.getElementById('user-name').innerText = usuario.nome;
+        document.getElementById('user-role').innerText =
+            usuario.is_ti ? "Administrador TI" : "Colaborador";
+
+        if (usuario.is_ti) {
+            document.getElementById('admin-menu').style.display = 'block';
+        }
+
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'flex';
+        document.getElementById('app').style.display = 'block';
+
+        navegar('solicitacoes');
 
     } catch (err) {
         console.error("Erro no Login:", err);
@@ -77,7 +74,6 @@ function logout() {
 let tempoInativo;
 
 function resetarCronometro() {
-
     if (!currentUser) return;
 
     clearTimeout(tempoInativo);
