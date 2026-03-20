@@ -96,11 +96,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     try {
         const { data: { user } } = await supabaseClient.auth.getUser();
 
+        // Se não houver usuário logado no Supabase, apenas mostra a tela de login
         if (!user) {
-            logout();
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('sidebar').style.display = 'none';
+            document.getElementById('app').style.display = 'none';
             return;
         }
 
+        // Se tiver usuário salvo localmente, restaura sessão
         if (salvo) {
             currentUser = JSON.parse(salvo);
 
@@ -121,6 +125,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     } catch (err) {
         console.error("Erro ao verificar sessão:", err);
-        logout();
+        // não faz logout, apenas mostra login
+        document.getElementById('login-screen').style.display = 'block';
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('app').style.display = 'none';
     }
 });
