@@ -67,8 +67,10 @@ async function gerarHash(texto) {
 }
 
 function logout() {
-    // remove dados do usuário e recarrega a página
-    localStorage.removeItem('sigti_user'); 
+    // Limpa tudo do usuário
+    localStorage.removeItem('sigti_user');
+    currentUser = null; // importante para cronômetro
+    clearTimeout(tempoInativo); // cancela timer
     window.location.reload();
 }
 
