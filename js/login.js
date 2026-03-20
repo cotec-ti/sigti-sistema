@@ -1,4 +1,4 @@
-
+/* ---------------- LOGIN ---------------- */
 async function fazerLogin() {
     const email = document.getElementById('log-email').value.trim().toLowerCase();
     const senha = document.getElementById('log-senha').value.trim();
@@ -7,6 +7,7 @@ async function fazerLogin() {
     try {
         const senhaHash = await gerarHash(senha);
 
+        // Busca usuário no banco
         const { data: usuario, error } = await supabaseClient
             .from('usuarios')
             .select('*')
@@ -17,43 +18,40 @@ async function fazerLogin() {
 
         if (error) throw error;
 
-        if (usuario) {
-
-            // 🔥 LOGIN NO SUPABASE AUTH (OBRIGATÓRIO)
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                email: email,
-                password: senha
-            });
-
-            console.log("AUTH DATA:", authData);
-            console.log("AUTH ERROR:", authError);
-
-            if (authError) {
-                alert("Erro Auth: " + authError.message);
-                return;
-            }
-
-            // 🔹 seu sistema continua normal
-            currentUser = usuario;
-            localStorage.setItem('sigti_user', JSON.stringify(usuario));
-
-            document.getElementById('user-name').innerText = usuario.nome;
-            document.getElementById('user-role').innerText =
-                usuario.is_ti ? "Administrador TI" : "Colaborador";
-
-            if (usuario.is_ti) {
-                document.getElementById('admin-menu').style.display = 'block';
-            }
-
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'flex';
-            document.getElementById('app').style.display = 'block';
-
-            navegar('solicitacoes');
-
-        } else {
+        if (!usuario) {
             errorMsg.style.display = 'block';
-}
+            return;
+        }
+
+        // LOGIN no Supabase Auth
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: senha
+        });
+
+        if (authError) {
+            alert("Erro Auth: " + authError.message);
+            return;
+        }
+
+        // Salva usuário local e atualiza UI
+        currentUser = usuario;
+        localStorage.setItem('sigti_user', JSON.stringify(usuario));
+
+        document.getElementById('user-name').innerText = usuario.nome;
+        document.getElementById('user-role').innerText = usuario.is_ti ? "Administrador TI" : "Colaborador";
+
+        if (usuario.is_ti) {
+            document.getElementById('admin-menu').style.display = 'block';
+        }
+
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'flex';
+        document.getElementById('app').style.display = 'block';
+
+        if (typeof navegar === "function") {
+            navegar('solicitacoes');
+        }
 
     } catch (err) {
         console.error("Erro no Login:", err);
@@ -61,22 +59,23 @@ async function fazerLogin() {
     }
 }
 
+/* ---------------- HASH ---------------- */
 async function gerarHash(texto) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(texto);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const encoder = new TextEncoder();
+    const data = encoder.encode(texto);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function logout() {
-    await supabaseClient.auth.signOut(); // 🔥 ESSENCIAL
-
+/* ---------------- LOGOUT ---------------- */
+window.logout = async function() {
+    await supabaseClient.auth.signOut();
     localStorage.removeItem('sigti_user');
-
-    window.location.reload();
+    location.reload();
 }
 
+/* ---------------- CRONOMETRO INATIVIDADE ---------------- */
 let tempoInativo;
 
 function resetarCronometro() {
@@ -86,26 +85,42 @@ function resetarCronometro() {
 
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
-        logout(); // ✔ já chama o logout correto
-    }, 900000); // 15 min
+        logout();
+    }, 90000); // 7 min
 }
-const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: senha
+
+/* ---------------- DOM CONTENT LOADED ---------------- */
+window.addEventListener('DOMContentLoaded', async () => {
+    const salvo = localStorage.getItem('sigti_user');
+
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+
+        if (!user) {
+            logout();
+            return;
+        }
+
+        if (salvo) {
+            currentUser = JSON.parse(salvo);
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('sidebar').style.display = 'flex';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('user-name').innerText = currentUser.nome;
+            document.getElementById('user-role').innerText = currentUser.is_ti ? 'Administrador TI' : 'Colaborador';
+
+            if (currentUser.is_ti) {
+                document.getElementById('admin-menu').style.display = 'block';
+            }
+
+            if (typeof navegar === "function") {
+                navegar('solicitacoes', document.querySelector('.nav-item'));
+            }
+        }
+
+    } catch (err) {
+        console.error("Erro ao verificar sessão:", err);
+        logout();
+    }
 });
-
-if (error) {
-    alert("Login inválido");
-    return;
-}
-
-// salva se quiser
-localStorage.setItem('sigti_user', JSON.stringify({
-    nome: "Usuário" // ou o que você já usa
-}));
-
-window.logout = async function() {
-    await supabaseClient.auth.signOut(); // desloga do Supabase
-    localStorage.removeItem('sigti_user'); // limpa usuário local
-    location.reload(); // recarrega página
-};
