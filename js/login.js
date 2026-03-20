@@ -11,7 +11,7 @@ async function fazerLogin() {
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('password', senhaHash)
+            .eq('senha', senhaHash)
             .eq('ativo', true)
             .maybeSingle();
 
@@ -89,7 +89,7 @@ function resetarCronometro() {
 }
 const { data, error } = await supabaseClient.auth.signInWithPassword({
     email: email,
-    password: senha
+    senha: senha
 });
 
 if (error) {
