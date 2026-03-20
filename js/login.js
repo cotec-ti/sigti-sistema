@@ -103,3 +103,9 @@ if (error) {
 localStorage.setItem('sigti_user', JSON.stringify({
     nome: "Usuário" // ou o que você já usa
 }));
+
+window.logout = async function() {
+    await supabaseClient.auth.signOut(); // desloga do Supabase
+    localStorage.removeItem('sigti_user'); // limpa usuário local
+    location.reload(); // recarrega página
+};
