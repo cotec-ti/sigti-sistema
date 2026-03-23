@@ -6,12 +6,11 @@ async function fazerLogin() {
     try {
         const senhaHash = await gerarHash(senha);
 
-        // 1️⃣ Busca na tabela usuarios
         const { data: usuario, error } = await supabaseClient
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha', senhaHash)  // <- usa a coluna correta
+            .eq('senha', senhaHash)
             .eq('ativo', true)
             .maybeSingle();
 
@@ -22,20 +21,7 @@ async function fazerLogin() {
             return;
         }
 
-        // 2️⃣ Login real no Supabase Auth
-        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: senha
-        });
-
-        if (authError) {
-            alert("Login inválido: " + authError.message);
-            return;
-        }
-
-        console.log("AUTH DATA:", authData);
-
-        // 3️⃣ Se login Auth OK, continua o fluxo normal
+        // ✅ LOGIN NORMAL (SEM AUTH)
         currentUser = usuario;
         localStorage.setItem('sigti_user', JSON.stringify(usuario));
 
@@ -67,8 +53,8 @@ async function gerarHash(texto) {
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function logout() {
-    await supabaseClient.auth.signOut();
+// ✅ LOGOUT SIMPLES (SEM AUTH)
+function logout() {
     localStorage.removeItem('sigti_user');
     currentUser = null;
     clearTimeout(tempoInativo);
@@ -91,5 +77,5 @@ function resetarCronometro() {
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
         logout();
-    }, 90000); 
+    }, 900000); // 15 min
 }
