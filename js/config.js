@@ -4,7 +4,13 @@
 const SB_URL = 'https://ilyhtxionytobqkerdka.supabase.co';
 const SB_KEY = 'sb_publishable_iNHedC8e8Ztp46umNmFEQQ_NV-vq8Kt'; 
 
-var supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+const supabaseClient = supabase.createClient(URL, KEY, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        storage: localStorage
+    }
+});
 
 let currentUser = null;
 

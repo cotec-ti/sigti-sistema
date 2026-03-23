@@ -6,6 +6,7 @@ async function fazerLogin() {
         const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: senha
+            
         });
 
         if (error) {
@@ -13,7 +14,7 @@ async function fazerLogin() {
             alert("Email ou senha inválidos");
             return;
         }
-
+        await supabaseClient.auth.getSession();
         console.log("LOGIN OK:", data);
 
         // 🔥 TESTE CRÍTICO
