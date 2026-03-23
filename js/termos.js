@@ -2,22 +2,21 @@ async function renderTermos() {
     const container = document.getElementById('view-container');
     if (!container) return;
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
-
-    if (!user) {
+    // ✅ usa seu sistema
+    if (!currentUser) {
         container.innerHTML = `<p>Usuário não logado.</p>`;
         return;
     }
 
     let query = supabaseClient.from('termos').select('*');
 
+    // ✅ usa currentUser.id
     if (!currentUser.is_ti) {
-        query = query.eq('usuario_id', user.id);
+        query = query.eq('usuario_id', currentUser.id);
     }
 
     const { data: lista, error } = await query.order('created_at', { ascending: false });
     if (error) return console.error("Erro Supabase:", error);
-
 
     container.innerHTML = `
         <div class="header-page"><h1>Meus Termos e Documentos</h1></div>
