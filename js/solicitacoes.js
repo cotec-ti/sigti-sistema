@@ -1,3 +1,13 @@
+let sessionReady = false;
+
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    console.log("Auth mudou:", event);
+
+    if (session) {
+        sessionReady = true;
+    }
+});
+
 async function renderSolicitacoes() {
         const container = document.getElementById('view-container');
         const resumo = await buscarResumoEstoque();
@@ -85,8 +95,13 @@ async function renderSolicitacoes() {
         const tipo = document.getElementById('os-tipo').value;
         const desc = document.getElementById('os-desc').value;
 
+        // 🔥 pequena espera pra garantir sessão (evita bug de timing)
+        await new Promise(resolve => setTimeout(resolve, 300));
+
         const { data: { session } } = await supabaseClient.auth.getSession();
         const user = session?.user;
+
+        console.log("SESSION:", session);
 
         if (!user) {
             alert("Usuário não está logado");
@@ -109,8 +124,13 @@ async function renderSolicitacoes() {
             }])
             .select();
 
-        console.log("DATA:", data);
-        console.log("ERROR INSERT:", error);
+        if (error) {
+            console.error("Erro ao inserir:", error);
+            alert("Erro ao enviar solicitação");
+            return;
+        }
+
+        console.log("OS criada:", data);
 
         alert("Solicitação enviada com sucesso!");
 
@@ -118,8 +138,8 @@ async function renderSolicitacoes() {
         renderSolicitacoes();
 
     } catch (err) {
-        console.error(err);
-        alert("Erro ao enviar solicitação.");
+        console.error("Erro geral:", err);
+        alert("Erro inesperado ao enviar solicitação.");
     }
 }
 
