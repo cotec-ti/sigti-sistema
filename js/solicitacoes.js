@@ -1,13 +1,3 @@
-let sessionReady = false;
-
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    console.log("Auth mudou:", event);
-
-    if (session) {
-        sessionReady = true;
-    }
-});
-
 async function renderSolicitacoes() {
         const container = document.getElementById('view-container');
         const resumo = await buscarResumoEstoque();
@@ -95,42 +85,37 @@ async function renderSolicitacoes() {
         const tipo = document.getElementById('os-tipo').value;
         const desc = document.getElementById('os-desc').value;
 
-        // 🔥 pequena espera pra garantir sessão (evita bug de timing)
-        await new Promise(resolve => setTimeout(resolve, 300));
-
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const user = session?.user;
-
-        console.log("SESSION:", session);
+        const { data: { user } } = await supabaseClient.auth.getUser();
 
         if (!user) {
             alert("Usuário não está logado");
             return;
         }
 
-        if (!currentUser) {
-            alert("Perfil do usuário não carregado");
-            return;
-        }
-
         const { data, error } = await supabaseClient
-            .from('solicitacoes')
-            .insert([{
-                usuario_id: user.id,
-                usuario_nome: currentUser.nome,
-                tipo: tipo,
-                descricao: desc,
-                status: 'pendente'
-            }])
-            .select();
+    .from('solicitacoes')
+    .insert([{
+        usuario_id: user.id,
+        usuario_nome: currentUser.nome,
+        tipo: tipo,
+        descricao: desc,
+        status: 'pendente'
+    }])
+    .select();
 
-        if (error) {
-            console.error("Erro ao inserir:", error);
-            alert("Erro ao enviar solicitação");
-            return;
-        }
+console.log("DATA:", data);
+console.log("ERROR INSERT:", error);
 
-        console.log("OS criada:", data);
+// 👇 log do email também
+const { data: emailData, error: emailError } = await supabaseClient.functions.invoke('enviar-email-os', {
+    body: {
+        usuario_nome: currentUser.nome,
+        descricao: desc
+    }
+});
+
+console.log("EMAIL DATA:", emailData);
+console.log("EMAIL ERROR:", emailError);
 
         alert("Solicitação enviada com sucesso!");
 
@@ -138,8 +123,8 @@ async function renderSolicitacoes() {
         renderSolicitacoes();
 
     } catch (err) {
-        console.error("Erro geral:", err);
-        alert("Erro inesperado ao enviar solicitação.");
+        console.error(err);
+        alert("Erro ao enviar solicitação.");
     }
 }
 

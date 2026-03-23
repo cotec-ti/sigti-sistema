@@ -1,43 +1,61 @@
 async function fazerLogin() {
-    const email = document.getElementById('email').value;
-    const senha = document.getElementById('senha').value;
+    const email = document.getElementById('log-email').value.trim().toLowerCase();
+    const senha = document.getElementById('log-senha').value.trim();
+    const errorMsg = document.getElementById('login-error');
 
     try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
+        const senhaHash = await gerarHash(senha);
+
+        // 1️⃣ Busca na tabela usuarios
+        const { data: usuario, error } = await supabaseClient
+            .from('usuarios')
+            .select('*')
+            .eq('email', email)
+            .eq('senha', senhaHash)  // <- usa a coluna correta
+            .eq('ativo', true)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!usuario) {
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        // 2️⃣ Login real no Supabase Auth
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: senha
-            
         });
 
-        if (error) {
-            console.error("Erro login:", error);
-            alert("Email ou senha inválidos");
-            return;
-        }
-        await supabaseClient.auth.getSession();
-        console.log("LOGIN OK:", data);
-
-        // 🔥 TESTE CRÍTICO
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        console.log("SESSION APÓS LOGIN:", session);
-
-        if (!session) {
-            alert("Login não criou sessão");
+        if (authError) {
+            alert("Login inválido: " + authError.message);
             return;
         }
 
-        alert("Login realizado com sucesso!");
+        console.log("AUTH DATA:", authData);
 
-        // 👉 carrega perfil
-        await carregarUsuario();
+        // 3️⃣ Se login Auth OK, continua o fluxo normal
+        currentUser = usuario;
+        localStorage.setItem('sigti_user', JSON.stringify(usuario));
 
-        // 👉 entra no sistema
+        document.getElementById('user-name').innerText = usuario.nome;
+        document.getElementById('user-role').innerText =
+            usuario.is_ti ? "Administrador TI" : "Colaborador";
+
+        if (usuario.is_ti) {
+            document.getElementById('admin-menu').style.display = 'block';
+        }
+
         document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('sidebar').style.display = 'flex';
         document.getElementById('app').style.display = 'block';
 
+        navegar('solicitacoes');
+
     } catch (err) {
-        console.error("Erro geral:", err);
-        alert("Erro ao fazer login");
+        console.error("Erro no Login:", err);
+        alert("Erro técnico: " + err.message);
     }
 }
 
@@ -49,8 +67,8 @@ async function gerarHash(texto) {
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-// ✅ LOGOUT SIMPLES (SEM AUTH)
-function logout() {
+async function logout() {
+    await supabaseClient.auth.signOut();
     localStorage.removeItem('sigti_user');
     currentUser = null;
     clearTimeout(tempoInativo);
@@ -73,5 +91,5 @@ function resetarCronometro() {
     tempoInativo = setTimeout(() => {
         alert("Sessão expirada por inatividade.");
         logout();
-    }, 900000); // 15 min
+    }, 90000); 
 }
