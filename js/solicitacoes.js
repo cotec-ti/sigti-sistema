@@ -85,37 +85,32 @@ async function renderSolicitacoes() {
         const tipo = document.getElementById('os-tipo').value;
         const desc = document.getElementById('os-desc').value;
 
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const user = session?.user;
 
         if (!user) {
             alert("Usuário não está logado");
             return;
         }
 
+        if (!currentUser) {
+            alert("Perfil do usuário não carregado");
+            return;
+        }
+
         const { data, error } = await supabaseClient
-    .from('solicitacoes')
-    .insert([{
-        usuario_id: user.id,
-        usuario_nome: currentUser.nome,
-        tipo: tipo,
-        descricao: desc,
-        status: 'pendente'
-    }])
-    .select();
+            .from('solicitacoes')
+            .insert([{
+                usuario_id: user.id,
+                usuario_nome: currentUser.nome,
+                tipo: tipo,
+                descricao: desc,
+                status: 'pendente'
+            }])
+            .select();
 
-console.log("DATA:", data);
-console.log("ERROR INSERT:", error);
-
-// 👇 log do email também
-const { data: emailData, error: emailError } = await supabaseClient.functions.invoke('enviar-email-os', {
-    body: {
-        usuario_nome: currentUser.nome,
-        descricao: desc
-    }
-});
-
-console.log("EMAIL DATA:", emailData);
-console.log("EMAIL ERROR:", emailError);
+        console.log("DATA:", data);
+        console.log("ERROR INSERT:", error);
 
         alert("Solicitação enviada com sucesso!");
 
