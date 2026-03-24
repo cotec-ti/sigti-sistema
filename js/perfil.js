@@ -49,46 +49,18 @@ async function renderPerfil() {
     if (nova !== confirma) return alert("Senhas não coincidem.");
 
     try {
-        const novaHash = await gerarHash(nova);
-        
-        // 🔍 TESTE 1: Ver o que tem dentro do currentUser no console
-        console.log("DEBUG - Dados do Usuário Logado:", currentUser);
-
-        if (!currentUser || !currentUser.email) {
-            alert("Sessão perdida. Por favor, saia e entre novamente no sistema.");
-            return;
-        }
-
-        const emailBusca = currentUser.email.trim().toLowerCase();
-
-        // 🔍 TESTE 2: Tentar atualizar usando o ID e o EMAIL ao mesmo tempo (um dos dois deve bater)
-        const { data, error } = await supabaseClient
-            .from('usuarios')
-            .update({ senha: novaHash })
-            .or(`id.eq.${currentUser.id},email.eq.${emailBusca}`) 
-            .select();
+        const { error } = await supabaseClient.auth.updateUser({
+            password: nova
+        });
 
         if (error) throw error;
 
-        if (data && data.length > 0) {
-            alert("SENHA ATUALIZADA COM SUCESSO!");
-            
-            // Atualiza localmente
-            currentUser.senha = novaHash;
-            localStorage.setItem('sigti_user', JSON.stringify(currentUser));
+        alert("Senha alterada com sucesso!");
 
-            document.getElementById('p-senha-nova').value = '';
-            document.getElementById('p-senha-confirma').value = '';
-        } else {
-            // 🔍 TESTE 3: Se falhou, vamos listar no console o que o banco tem
-            const { data: todos } = await supabaseClient.from('usuarios').select('email, id').limit(5);
-            console.log("DEBUG - Primeiros e-mails no banco:", todos);
-            
-            alert("Ainda não encontrou. Verifique o F12 (Console) para ver os dados técnicos.");
-        }
+        document.getElementById('p-senha-nova').value = '';
+        document.getElementById('p-senha-confirma').value = '';
 
     } catch (err) {
-        console.error("Erro técnico detalhado:", err);
         alert("Erro: " + err.message);
     }
 }
