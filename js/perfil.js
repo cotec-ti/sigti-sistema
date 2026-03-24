@@ -54,7 +54,8 @@ async function renderPerfil() {
     }
 
     const { error } = await supabaseClient.auth.resetPasswordForEmail(user.email, {
-        redirectTo: "https://cotec-ti.github.io"
+    redirectTo: "https://cotec-ti.github.io/sigti-sistema/"
+
     });
 
     if (error) {
