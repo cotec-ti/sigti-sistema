@@ -2,7 +2,7 @@ async function fazerLogin() {
     const email = document.getElementById('log-email').value.trim().toLowerCase();
     const senha = document.getElementById('log-senha').value.trim();
     const errorMsg = document.getElementById('login-error');
-    await supabaseClient.auth.signOut(); // 🔥 limpa qualquer sessão antiga
+   // await supabaseClient.auth.signOut(); // 🔥 limpa qualquer sessão antiga
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
     email: email,
