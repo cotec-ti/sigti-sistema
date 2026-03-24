@@ -1,4 +1,5 @@
-/*
+
+
 async function renderPerfil() {
     const container = document.getElementById('view-container');
     
@@ -30,48 +31,36 @@ async function renderPerfil() {
             <hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
 
             <h3>Alterar Senha</h3>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Deseja atualizar sua senha de acesso? Preencha os campos abaixo.</p>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Será enviado um email para redefinir sua senha.</p>
             
             <div style="display: flex; flex-direction: column; gap: 15px; max-width: 350px;">
-                <input type="password" id="p-senha-nova" placeholder="Nova Senha (mín. 6 dígitos)">
-                <input type="password" id="p-senha-confirma" placeholder="Confirme a Nova Senha">
-                <button onclick="atualizarSenhaPerfil()" style="width: fit-content; padding: 10px 30px;">Atualizar Senha</button>
+                
+                <button onclick="atualizarSenhaPerfil()" style="width: fit-content; padding: 10px 30px;">
+                    Enviar redefinição de senha
+                </button>
             </div>
         </div>
     `;
-} */
-/*
+}
+    
+
+
       async function atualizarSenhaPerfil() {
-    const nova = document.getElementById('p-senha-nova').value.trim();
-    const confirma = document.getElementById('p-senha-confirma').value.trim();
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
-    if (nova.length < 6) return alert("Mínimo 6 caracteres.");
-    if (nova !== confirma) return alert("Senhas não coincidem.");
+    if (!user) {
+        alert("Usuário não logado");
+        return;
+    }
 
-    try {
-        // 🔥 garante sessão válida
-        const { data: { session } } = await supabaseClient.auth.getSession();
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(user.email, {
+        redirectTo: window.location.origin
+    });
 
-        if (!session) {
-            alert("Sessão inválida. Faça login novamente.");
-            return;
-        }
-
-        const { error } = await supabaseClient.auth.updateUser({
-            password: nova
-        });
-
-        if (error) throw error;
-
-        alert("Senha alterada! Faça login novamente.");
-
-        // 🔥 força logout
-        await supabaseClient.auth.signOut();
-        location.reload();
-
-    } catch (err) {
-        console.error(err);
-        alert("Erro: " + err.message);
+    if (error) {
+        alert("Erro: " + error.message);
+    } else {
+        alert("Email para redefinir senha enviado!");
     }
 }
-    */
+    
