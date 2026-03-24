@@ -75,3 +75,27 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+window.addEventListener('DOMContentLoaded', async () => {
+    const hash = window.location.hash;
+
+    if (hash && hash.includes('access_token')) {
+        const nova = prompt("Digite a nova senha:");
+
+        if (!nova || nova.length < 6) {
+            alert("Senha inválida");
+            return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({
+            password: nova
+        });
+
+        if (error) {
+            alert("Erro: " + error.message);
+        } else {
+            alert("Senha redefinida com sucesso!");
+            window.location.hash = "";
+        }
+    }
+});
