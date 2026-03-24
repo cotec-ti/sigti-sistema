@@ -40,7 +40,7 @@ async function renderPerfil() {
         </div>
     `;
 }
-
+/*
       async function atualizarSenhaPerfil() {
     const nova = document.getElementById('p-senha-nova').value.trim();
     const confirma = document.getElementById('p-senha-confirma').value.trim();
@@ -74,3 +74,4 @@ async function renderPerfil() {
         alert("Erro: " + err.message);
     }
 }
+    */

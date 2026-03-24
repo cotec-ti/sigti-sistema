@@ -200,7 +200,7 @@ async function excluirUsuario(id) {
         alert("Erro ao mudar status: " + err.message);
     }
 }
-
+/*
     async function alterarSenha(id) {
         const nova = prompt("Nova senha:");
         if (!nova) return;
@@ -214,3 +214,4 @@ async function excluirUsuario(id) {
     if (error) alert("Erro: " + error.message);
     else alert("Senha alterada!");
 }
+    */
