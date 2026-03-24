@@ -54,7 +54,7 @@ async function renderPerfil() {
     }
 
     const { error } = await supabaseClient.auth.resetPasswordForEmail(user.email, {
-        redirectTo: window.location.origin
+        redirectTo: "https://cotec-ti.github.io"
     });
 
     if (error) {
