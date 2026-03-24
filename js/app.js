@@ -51,35 +51,8 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-window.addEventListener('DOMContentLoaded', async () => {
-    const hash = window.location.hash;
-
-    if (hash && hash.includes('access_token')) {
-        // 🔥 usuário veio do reset de senha
-        const nova = prompt("Digite a nova senha:");
-
-        if (!nova || nova.length < 6) {
-            alert("Senha inválida");
-            return;
-        }
-
-        const { error } = await supabaseClient.auth.updateUser({
-            password: nova
-        });
-
-        if (error) {
-            alert("Erro ao redefinir senha: " + error.message);
-        } else {
-            alert("Senha redefinida com sucesso!");
-            window.location.hash = "";
-        }
-    }
-});
-
-window.addEventListener('DOMContentLoaded', async () => {
-    const hash = window.location.hash;
-
-    if (hash && hash.includes('access_token')) {
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
         const nova = prompt("Digite a nova senha:");
 
         if (!nova || nova.length < 6) {
@@ -95,7 +68,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             alert("Erro: " + error.message);
         } else {
             alert("Senha redefinida com sucesso!");
-            window.location.hash = "";
+            window.location.href = "/sigti-sistema/";
         }
     }
 });
