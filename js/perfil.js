@@ -1,4 +1,4 @@
-
+/*
 async function renderPerfil() {
     const container = document.getElementById('view-container');
     
@@ -39,7 +39,7 @@ async function renderPerfil() {
             </div>
         </div>
     `;
-}
+} */
 /*
       async function atualizarSenhaPerfil() {
     const nova = document.getElementById('p-senha-nova').value.trim();
