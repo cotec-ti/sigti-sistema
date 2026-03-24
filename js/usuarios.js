@@ -48,15 +48,14 @@ async function renderUsuarios() {
         }
 
         async function salvarUsuario() {
-            const n = document.getElementById('u-nome').value.trim();
-            const m = document.getElementById('u-mat').value.trim();
-            const e = document.getElementById('u-email').value.trim().toLowerCase();
-            const s = document.getElementById('u-senha').value.trim();
-            const ti = document.getElementById('u-ti').value === "true";
+    const n = document.getElementById('u-nome').value.trim();
+    const m = document.getElementById('u-mat').value.trim();
+    const e = document.getElementById('u-email').value.trim().toLowerCase();
+    const s = document.getElementById('u-senha').value.trim();
+    const ti = document.getElementById('u-ti').value === "true";
 
-            try {
-
-        // 🔒 VALIDAÇÕES PRIMEIRO
+    try {
+        // 🔒 VALIDAÇÕES
         if (!n || !m || !e || !s) {
             alert("Preencha todos os campos obrigatórios!");
             return;
@@ -72,12 +71,28 @@ async function renderUsuarios() {
             return;
         }
 
-        // 🔐 Agora sim gera hash
+        // 🔥 1️⃣ CRIA NO AUTH
+        const { data, error: authError } = await supabaseClient.auth.signUp({
+            email: e,
+            password: s
+        });
+
+        if (authError) {
+            console.error("Erro Auth:", authError);
+            alert("Erro ao criar login: " + authError.message);
+            return;
+        }
+
+        const user = data.user;
+
+        // 🔐 2️⃣ HASH (se quiser manter)
         const senhaHash = await gerarHash(s);
 
+        // 📦 3️⃣ CRIA NA TABELA
         const { error } = await supabaseClient
             .from('usuarios')
             .insert([{
+                id: user.id, // 🔥 ligação com auth
                 nome: n,
                 matricula: m,
                 email: e,
