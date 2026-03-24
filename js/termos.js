@@ -1,5 +1,5 @@
 async function renderTermos() {
-    await carregarUsuario();
+    carregarUsuario();
     const container = document.getElementById('view-container');
     if (!container) return;
 
