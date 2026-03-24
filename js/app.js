@@ -53,6 +53,12 @@ document.addEventListener('keydown', function(event) {
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === "PASSWORD_RECOVERY") {
+
+        if (!session) {
+            alert("Sessão inválida");
+            return;
+        }
+
         const nova = prompt("Digite a nova senha:");
 
         if (!nova || nova.length < 6) {
@@ -68,6 +74,9 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
             alert("Erro: " + error.message);
         } else {
             alert("Senha redefinida com sucesso!");
+
+            // 🔥 força login limpo depois
+            await supabaseClient.auth.signOut();
             window.location.href = "/sigti-sistema/";
         }
     }
