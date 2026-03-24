@@ -49,18 +49,28 @@ async function renderPerfil() {
     if (nova !== confirma) return alert("Senhas não coincidem.");
 
     try {
+        // 🔥 garante sessão válida
+        const { data: { session } } = await supabaseClient.auth.getSession();
+
+        if (!session) {
+            alert("Sessão inválida. Faça login novamente.");
+            return;
+        }
+
         const { error } = await supabaseClient.auth.updateUser({
             password: nova
         });
 
         if (error) throw error;
 
-        alert("Senha alterada com sucesso!");
+        alert("Senha alterada! Faça login novamente.");
 
-        document.getElementById('p-senha-nova').value = '';
-        document.getElementById('p-senha-confirma').value = '';
+        // 🔥 força logout
+        await supabaseClient.auth.signOut();
+        location.reload();
 
     } catch (err) {
+        console.error(err);
         alert("Erro: " + err.message);
     }
 }
