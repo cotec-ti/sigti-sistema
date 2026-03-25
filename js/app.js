@@ -51,14 +51,34 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === "PASSWORD_RECOVERY") {
+window.addEventListener('DOMContentLoaded', async () => {
+    const hash = window.location.hash;
 
-        if (!session) {
-            alert("Sessão inválida");
+    if (hash && hash.includes('access_token')) {
+        // 🔥 usuário veio do reset de senha
+        const nova = prompt("Digite a nova senha:");
+
+        if (!nova || nova.length < 6) {
+            alert("Senha inválida");
             return;
         }
 
+        const { error } = await supabaseClient.auth.updateUser({
+            password: nova
+        });
+
+        if (error) {
+            alert("Erro ao redefinir senha: " + error.message);
+        } else {
+            alert("Senha redefinida com sucesso!");
+            window.location.hash = "";
+        }
+    }
+});
+window.addEventListener('DOMContentLoaded', async () => {
+    const hash = window.location.hash;
+
+    if (hash && hash.includes('access_token')) {
         const nova = prompt("Digite a nova senha:");
 
         if (!nova || nova.length < 6) {
@@ -74,9 +94,30 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
             alert("Erro: " + error.message);
         } else {
             alert("Senha redefinida com sucesso!");
+            window.location.hash = "";
+        }
+    }
+});
 
-            // 🔥 força login limpo depois
-            await supabaseClient.auth.signOut();
+window.addEventListener('DOMContentLoaded', async () => {
+    const hash = window.location.hash;
+
+    if (hash && hash.includes('access_token')) {
+        const nova = prompt("Digite a nova senha:");
+
+        if (!nova || nova.length < 6) {
+            alert("Senha inválida");
+            return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({
+            password: nova
+        });
+
+        if (error) {
+            alert("Erro: " + error.message);
+        } else {
+            alert("Senha redefinida com sucesso!");
             window.location.href = "/sigti-sistema/";
         }
     }
