@@ -1,4 +1,4 @@
-
+/*
 
 async function renderPerfil() {
     const container = document.getElementById('view-container');
@@ -65,3 +65,4 @@ async function renderPerfil() {
     }
 }
     
+*/
