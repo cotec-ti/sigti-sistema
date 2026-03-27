@@ -1,4 +1,4 @@
-/*
+
 
 async function renderPerfil() {
     const container = document.getElementById('view-container');
@@ -54,7 +54,7 @@ async function renderPerfil() {
     }
 
     const { error } = await supabaseClient.auth.resetPasswordForEmail(user.email, {
-    redirectTo: "https://cotec-ti.github.io/sigti-sistema/"
+    redirectTo: "https://cotec-ti.github.io/sigti-sistema/reset.html"
 
     });
 
@@ -65,4 +65,3 @@ async function renderPerfil() {
     }
 }
     
-*/

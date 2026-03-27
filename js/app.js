@@ -1,4 +1,37 @@
+// 🔥 RESET DE SENHA (TEM QUE SER O PRIMEIRO)
 window.addEventListener('DOMContentLoaded', async () => {
+    const hash = window.location.hash;
+
+    if (hash && hash.includes('access_token')) {
+        console.log('RESET DETECTADO');
+
+        const nova = prompt("Digite a nova senha:");
+
+        if (!nova || nova.length < 6) {
+            alert("Senha inválida");
+            return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({
+            password: nova
+        });
+
+        if (error) {
+            alert("Erro ao redefinir senha: " + error.message);
+        } else {
+            alert("Senha redefinida com sucesso!");
+
+            // limpa hash
+            window.location.hash = "";
+
+            // recarrega limpo
+            window.location.reload();
+        }
+
+        return; // ⛔ impede o resto de rodar durante reset
+    }
+
+    // 🔐 FLUXO NORMAL DO SISTEMA
     const salvo = localStorage.getItem('sigti_user');
     const { data: { user } } = await supabaseClient.auth.getUser();
 
@@ -26,7 +59,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Realtime
+
+// 🔄 REALTIME
 if (typeof supabaseClient !== 'undefined') {
     supabaseClient
       .channel('monitor-geral')
@@ -42,83 +76,12 @@ if (typeof supabaseClient !== 'undefined') {
       .subscribe();
 }
 
-// ESC global
+
+// ⌨️ ESC GLOBAL
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         if (typeof fecharModal === "function") {
             fecharModal();
-        }
-    }
-});
-
-window.addEventListener('DOMContentLoaded', async () => {
-    const hash = window.location.hash;
-
-    if (hash && hash.includes('access_token')) {
-        // 🔥 usuário veio do reset de senha
-        const nova = prompt("Digite a nova senha:");
-
-        if (!nova || nova.length < 6) {
-            alert("Senha inválida");
-            return;
-        }
-
-        const { error } = await supabaseClient.auth.updateUser({
-            password: nova
-        });
-
-        if (error) {
-            alert("Erro ao redefinir senha: " + error.message);
-        } else {
-            alert("Senha redefinida com sucesso!");
-            window.location.hash = "";
-        }
-    }
-});
-window.addEventListener('DOMContentLoaded', async () => {
-    const hash = window.location.hash;
-
-    if (hash && hash.includes('access_token')) {
-        const nova = prompt("Digite a nova senha:");
-
-        if (!nova || nova.length < 6) {
-            alert("Senha inválida");
-            return;
-        }
-
-        const { error } = await supabaseClient.auth.updateUser({
-            password: nova
-        });
-
-        if (error) {
-            alert("Erro: " + error.message);
-        } else {
-            alert("Senha redefinida com sucesso!");
-            window.location.hash = "";
-        }
-    }
-});
-
-window.addEventListener('DOMContentLoaded', async () => {
-    const hash = window.location.hash;
-
-    if (hash && hash.includes('access_token')) {
-        const nova = prompt("Digite a nova senha:");
-
-        if (!nova || nova.length < 6) {
-            alert("Senha inválida");
-            return;
-        }
-
-        const { error } = await supabaseClient.auth.updateUser({
-            password: nova
-        });
-
-        if (error) {
-            alert("Erro: " + error.message);
-        } else {
-            alert("Senha redefinida com sucesso!");
-            window.location.href = "/sigti-sistema/";
         }
     }
 });
