@@ -9,14 +9,14 @@ async function fazerLogin() {
     password: senha
 });
     try {
-        const senhaHash = await gerarHash(senha);
+        //const senhaHash = await gerarHash(senha);
 
         // 1️⃣ Busca na tabela usuarios
         const { data: usuario, error } = await supabaseClient
             .from('usuarios')
             .select('*')
             .eq('email', email)
-            .eq('senha', senhaHash)  // <- usa a coluna correta
+            //.eq('senha', senhaHash)  // <- usa a coluna correta
             .eq('ativo', true)
             .maybeSingle();
 
