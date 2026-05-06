@@ -96,7 +96,7 @@ async function renderUsuarios() {
                 nome: n,
                 matricula: m,
                 email: e,
-                senha: senhaHash,
+               // senha: senhaHash,
                 is_ti: ti,
                 ativo: true
             }]);
