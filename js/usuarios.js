@@ -86,7 +86,7 @@ async function renderUsuarios() {
         const user = data.user;
 
         // 🔐 2️⃣ HASH (se quiser manter)
-        const senhaHash = await gerarHash(s);
+      //  const senhaHash = await gerarHash(s);
 
         // 📦 3️⃣ CRIA NA TABELA
         const { error } = await supabaseClient
